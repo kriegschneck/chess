@@ -26,10 +26,13 @@ class pawn extends piece {
     setPosition(x, y);
   }
 
+  public String toString() {
+    return "p";
+  }
 
   void move() {
     int x = getX();
     int y = getY();
-    setPosition(++x,++y);
+    setPosition(x,++y);
   }
 }
