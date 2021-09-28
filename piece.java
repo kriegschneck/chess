@@ -22,7 +22,7 @@ abstract class piece {
 
 
 class pawn extends piece {
-  pawn (int x, int y) {
+  pawn(int x, int y) {
     setPosition(x, y);
   }
 
@@ -36,3 +36,54 @@ class pawn extends piece {
     setPosition(x,++y);
   }
 }
+
+/*class king extends piece {
+  king(int x, int y) {
+    setPosition(x, y);
+  }
+
+  public String toString() {
+    return "k";
+  }
+
+}
+
+class queen extends piece {
+  queen(int x, int y) {
+    setPosition(x, y);
+  }
+
+  public String toString() {
+    return "q";
+  }
+}
+
+class rook extends piece {
+  rook(int x, int y) {
+    setPosition(x, y);
+  }
+
+  public String toString() {
+    return "r";
+  }
+}
+
+class bishop extends piece {
+  bishop(int x, int y) {
+    setPosition(x, y);
+  }
+
+  public String toString() {
+    return "b";
+  }
+}
+
+class knight extends piece {
+  knight(int x, int y) {
+    setPosition(x, y);
+  }
+
+  public String toString() {
+    return "k";
+  }
+}*/
