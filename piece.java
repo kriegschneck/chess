@@ -5,8 +5,12 @@ abstract class piece {
   private int x, y; //position of a figure
 
   void setPosition(int x, int y) {
+    int oldX = this.x;
+    int oldY = this.y;
     this.x = x;
     this.y = y;
+    game.board[x][y] = this;
+    game.board[oldX][oldY] = null;
   }
 
   int getX() {
