@@ -4,30 +4,35 @@ import java.util.*;
 import java.io.*;
 
 class game {
-  static PrintWriter pw = new PrintWriter(System.out, true); //for printing
+  static PrintWriter pw = new PrintWriter(System.out, true); //to print stuff
 
-  static ArrayList<piece> whites = new ArrayList<>(16); //list of white pieces
-  static ArrayList<piece> blacks = new ArrayList<>(16); //list of black pieces
+  static ArrayList<piece> whites = new ArrayList<>(8); //list of white pieces
+  static ArrayList<piece> blacks = new ArrayList<>(8); //list of black pieces
   //board with pieces. a cell contains either null or a link to a piece if
   //the cell's indexes equal to the position of the piece
   static piece[][] board = new piece[8][8];
 
   public static void main(String[] args) {
     for(int i = 0; i < 8; i++) {  //add 8 pawns to the list of pieces
-      whites.add(new pawn(i,1));
+      whites.add(new pawn(i, 1, true));
+    }
+
+    for(int i = 0; i < 8; i++) {  //add 8 pawns to the list of pieces
+      blacks.add(new pawn(i, 6, false));
     }
 
 
+
     int turn = 0; //for counting turns
-    Random rn = new Random();
+
     //playing the game
     while(true) {
       printBoard(++turn);
-      whites.get(rn.nextInt(7)).move(); //random white piece makes a move
-
+      if(turn % 2 != 0) SelectionAndMove(whites);
+      else SelectionAndMove(blacks);
 
       try {
-        Thread.sleep(1000);
+        Thread.sleep(500);
       } catch (Exception e) {
         pw.println("interrupted");
       }
@@ -35,10 +40,32 @@ class game {
 
   }
 
+
+  static void SelectionAndMove(ArrayList<piece> setOfPieces) { //choosing a piece to make a move
+    int i = 0;      //number of tries to make a move
+    int randInt = 0;
+    Random rn = new Random();
+    while(true) {   //random white piece makes a move
+      try {
+        randInt = rn.nextInt(setOfPieces.size() - i); //get a random number
+      } catch (Exception e) {
+        pw.println("\nIs it a draw?");
+        return;
+      }
+      if(setOfPieces.get(randInt).move()) return;   //random piece makes a move. if a move was successful go to next turn
+      else {                                        //if move didn't succeed
+        setOfPieces.add(setOfPieces.get(randInt));
+        setOfPieces.remove(randInt);                //set the piece that couldn't move at the last position
+        i++;                                        //exclude this piece from the next random selection
+      }
+    }
+  }
+
+
   //printing the board with the pieces
   static void printBoard(int turn) {
     pw.print("\033[H\033[2J"); //clear terminal
-    //board.flush();
+    pw.flush();
 
     for(int i = 7; i >=0; i--) {
       pw.print((i + 1) + " "); // row's number
