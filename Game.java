@@ -29,12 +29,12 @@ class Game {
       else SelectionAndMove(blacks);
 
       try {
-        Thread.sleep(500);
+        Thread.sleep(1000); //time between moves
       } catch (Exception e) {
         pw.println("Interrupted");
       }
     }
- 
+
   }
 
 
