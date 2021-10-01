@@ -42,7 +42,7 @@ class Pawn extends Piece {
     int y = getY();
     if (isWhite()) {
       if(y == 7) return false;
-      if(y == 1) {  //advance
+      if(y == 1 && Game.board[x][y + 1] == null && Game.board[x][y + 2] == null) {  //advance
         erasePosition();
         setPosition(x, y + 2);
         return true;
