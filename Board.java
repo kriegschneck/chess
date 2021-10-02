@@ -27,7 +27,7 @@ class Board {
 
   //choosing a piece to make a move
   void pieceSelectionAndMove(ArrayList<Piece> setOfPieces) throws ChessException {
-    pw.println("white size = " + whites.size() + "\nblack size = " + blacks.size());
+    //pw.println("white size = " + whites.size() + "\nblack size = " + blacks.size());
     int randInt;
     Random rn = new Random();
     //random piece makes a move
@@ -39,8 +39,9 @@ class Board {
         setOfPieces.add(setOfPieces.get(randInt));  //set the piece that couldn't move at the last position
         setOfPieces.remove(randInt);                //exclude this piece from the next random selection
       }
+      pw.println();
     }
-    throw new ChessException("No pieces can make a move"); //is there wasn't any successful moves
+    throw new ChessException("No piece can make a move. This is a draw"); //is there wasn't any successful moves
   }
 
   //printing the board with the pieces
