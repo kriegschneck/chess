@@ -27,23 +27,20 @@ class Board {
 
   //choosing a piece to make a move
   void pieceSelectionAndMove(ArrayList<Piece> setOfPieces) throws ChessException {
-    int i = 0;      //number of tries to make a move
+    pw.println("white size = " + whites.size() + "\nblack size = " + blacks.size());
     int randInt;
     Random rn = new Random();
-    while(true) {   //random white piece makes a move
-      try {
-        randInt = rn.nextInt(setOfPieces.size() - i); //get a random number
-        pw.println(randInt);
-      } catch (Exception e) {
-        throw new ChessException("No pieces can make a move");
-      }
+    //random piece makes a move
+    for(int i = 0; i < setOfPieces.size(); i++) {   //it each piece has a try to make an eligible move
+      randInt = rn.nextInt(setOfPieces.size() - i); //get a random number
+      pw.print(randInt);
       if(setOfPieces.get(randInt).move()) return;   //random piece makes a move. if a move was successful go to next turn
       else {                                        //if move didn't succeed
         setOfPieces.add(setOfPieces.get(randInt));  //set the piece that couldn't move at the last position
         setOfPieces.remove(randInt);                //exclude this piece from the next random selection
-        i++;
       }
     }
+    throw new ChessException("No pieces can make a move"); //is there wasn't any successful moves
   }
 
   //printing the board with the pieces

@@ -59,6 +59,9 @@ class Pawn extends Piece {
     eligiblePositions = new ArrayList<>();
     int x = getX();
     int y = getY();
+
+    cBoard.pw.println("\t" + this + " [" + x + ", " + y + "]");
+
     if (isWhite()) { //calculating eligible moves if the piece is white
       if(y == cBoard.getRows() - 1) return false;
       if(y == 1 && cBoard.cells[x][y + 1] == null && cBoard.cells[x][y + 2] == null) {  //advance
@@ -93,7 +96,6 @@ class Pawn extends Piece {
       if(eligiblePositions.size() == 0) return false;
       int[] temp = eligiblePositions.get(rn.nextInt(eligiblePositions.size()));
       eraseCurrentPosition();
-      cBoard.pw.println("\n" + this + " [" + x + ", " + y + "]");
       setPosition(temp[0], temp[1]);
       return true;
 
@@ -109,7 +111,7 @@ class Rook extends Piece {
   boolean move() throws NullPointerException {
     int x = getX();
     int y = getY();
-
+    cBoard.pw.println("\t" + this + " [" + x + ", " + y + "]");
 
     return true;
   }

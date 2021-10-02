@@ -21,8 +21,8 @@ class Game {
       for(int i = 0; i < columns; i++) {            //add 8 pawns to the list of pieces
         board.blacks.add(new Pawn(board, i, rows - 2));
       }
-      board.whites.add(new Rook(board, 0, rows - 1));
-      board.whites.add(new Rook(board, columns - 1, rows - 1));
+      board.blacks.add(new Rook(board, 0, rows - 1));
+      board.blacks.add(new Rook(board, columns - 1, rows - 1));
     } catch (Exception e) {
       board.pw.println("Couldn't create a black piece");
       return;
