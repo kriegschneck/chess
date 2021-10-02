@@ -110,13 +110,60 @@ class Rook extends Piece {
   }
 
   boolean move() throws NullPointerException {
+    rn = new Random();
+    eligiblePositions = new ArrayList<>();
     int x = getX();
     int y = getY();
     cBoard.pw.print("\t" + this + " [" + x + ", " + y + "]");
-    /*for(int i = x; i < cBoard.getColumns(); i++) {
-      if(cBoard.cells[i][y] == null || )
-    }*/
+    for(int i = x + 1; i < cBoard.getColumns(); i++) {
+      if(cBoard.cells[i][y] == null) {
+        eligiblePositions.add(new int[]{i, y});
+        continue;
+      }
+      if(isWhite() != cBoard.cells[i][y].isWhite()) {
+        eligiblePositions.add(new int[]{i, y});
+        break;
+      }
+      else break;
+    }
+    for(int i = x - 1; i >= 0; i--) {
+      if(cBoard.cells[i][y] == null) {
+        eligiblePositions.add(new int[]{i, y});
+        continue;
+      }
+      if(isWhite() != cBoard.cells[i][y].isWhite()) {
+        eligiblePositions.add(new int[]{i, y});
+        break;
+      }
+      else break;
+    }
+    for(int i = y + 1; i < cBoard.getRows(); i++) {
+      if(cBoard.cells[x][i] == null) {
+        eligiblePositions.add(new int[]{x, i});
+        continue;
+      }
+      if(isWhite() != cBoard.cells[x][i].isWhite()) {
+        eligiblePositions.add(new int[]{x, i});
+        break;
+      }
+      else break;
+    }
+    for(int i = y - 1; i >= 0; i--) {
+      if(cBoard.cells[x][i] == null) {
+        eligiblePositions.add(new int[]{x, i});
+        continue;
+      }
+      if(isWhite() != cBoard.cells[x][i].isWhite()) {
+        eligiblePositions.add(new int[]{x, i});
+        break;
+      }
+      else break;
+    }
 
+    if(eligiblePositions.size() == 0) return false;
+    int[] temp = eligiblePositions.get(rn.nextInt(eligiblePositions.size()));
+    eraseCurrentPosition();
+    setPosition(temp[0], temp[1]);
     cBoard.pw.println(" - [" + getX() + ", " + getY() + "]");
     return true;
   }
