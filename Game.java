@@ -1,80 +1,51 @@
 package chess;
 
-import java.util.*;
-import java.io.*;
-
 class Game {
-  static PrintWriter pw = new PrintWriter(System.out, true); //to print stuff
-
-  static ArrayList<Piece> whites = new ArrayList<>(8); //list of white pieces
-  static ArrayList<Piece> blacks = new ArrayList<>(8); //list of black pieces
-  //board with pieces. a cell contains either null or a link to a piece if
-  //the cell's indexes equal to the position of the piece
-  static Piece[][] board = new Piece[8][8];
-
-  /***START HERE***/
   public static void main(String[] args) {
-    for(int i = 0; i < 8; i++) {  //add 8 pawns to the list of pieces
-      whites.add(new Pawn(i, 1, true));
+    final int rows = 8;     //cannot be less than 8
+    final int columns = 8;  //cannot be less than 8
+    Board board = new Board(rows, columns); //creating a board
+
+    try { //adding white pieces to the board
+      for(int i = 0; i < columns; i++) {            //add 8 pawns to the list of pieces
+        board.whites.add(new Pawn(board, i, 1));
+      }
+      board.whites.add(new Rook(board, 0, 0));
+      board.whites.add(new Rook(board, columns - 1, 0));
+    } catch (Exception e) {
+      board.pw.println("Couldn't create a white piece");
+      return;
     }
 
-    for(int i = 0; i < 8; i++) {  //add 8 pawns to the list of pieces
-      blacks.add(new Pawn(i, 6, false));
+    try { //adding black pieces to the board
+      for(int i = 0; i < columns; i++) {            //add 8 pawns to the list of pieces
+        board.blacks.add(new Pawn(board, i, rows - 2));
+      }
+      board.whites.add(new Rook(board, 0, rows - 1));
+      board.whites.add(new Rook(board, columns - 1, rows - 1));
+    } catch (Exception e) {
+      board.pw.println("Couldn't create a black piece");
+      return;
     }
 
-    int turn = 0; //counting turns
+    int turn = 0; //for counting turns
     while(true) { //playing the game
-      printBoard(++turn);
-      if(turn % 2 != 0) SelectionAndMove(whites);
-      else SelectionAndMove(blacks);
+      board.printBoard(turn++);
+      try {
+        if(turn % 2 == 0) board.pieceSelectionAndMove(board.blacks);
+        else board.pieceSelectionAndMove(board.whites);
+      } catch (Exception e) {
+        board.pw.println(e);
+        break;
+      }
 
       try {
-        Thread.sleep(1000); //time between moves
+        Thread.sleep(500); //time between moves
       } catch (Exception e) {
-        pw.println("Interrupted");
+        board.pw.println("The game was interrupted");
+        break;
       }
     }
 
   }
-
-
-  static void SelectionAndMove(ArrayList<Piece> setOfPieces) { //choosing a piece to make a move
-    int i = 0;      //number of tries to make a move
-    int randInt = 0;
-    Random rn = new Random();
-    while(true) {   //random white piece makes a move
-      try {
-        randInt = rn.nextInt(setOfPieces.size() - i); //get a random number
-      } catch (Exception e) {
-        pw.println("\nIs it a draw?");
-        return;
-      }
-      if(setOfPieces.get(randInt).move()) return;   //random piece makes a move. if a move was successful go to next turn
-      else {                                        //if move didn't succeed
-        setOfPieces.add(setOfPieces.get(randInt));
-        setOfPieces.remove(randInt);                //set the piece that couldn't move at the last position
-        i++;                                        //exclude this piece from the next random selection
-      }
-    }
-  }
-
-
-  //printing the board with the pieces
-  static void printBoard(int turn) {
-    pw.print("\033[H\033[2J"); //clear terminal
-    pw.flush();
-
-    for(int i = 7; i >=0; i--) {
-      pw.print((i + 1) + " "); // row's number
-      for(int j = 0; j < 8; j++) {
-        pw.print("[");
-        if(board[j][i] == null) pw.print(" "); //if board's cell isnt empty, print piece's letter
-        else pw.print(board[j][i]);
-        pw.print("]");
-      }
-      pw.println();
-    }
-    pw.println("   a  b  c  d  e  f  g  h\n\nTurn: " + turn); // column's letters
-  }
-
 }

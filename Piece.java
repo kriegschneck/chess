@@ -1,29 +1,42 @@
 package chess;
 
-import java.util.*;
+import java.util.Random;
+import java.util.ArrayList;
 
 abstract class Piece {
   private boolean color;    //true = white, false = black
   private String letter;    //a letter to print
   private int x, y;         //a position of a figure
+  Board cBoard;      //a link to the current board to play on
 
-  Piece(boolean color, String letter) {
-    this.color = color;                   //set the color of the piece
-    if(color) this.letter = letter;       //set the letter. plack pieces go with upper case letters
-    else this.letter = letter.toUpperCase();
+  //technical variables
+  Random rn;
+  ArrayList<int[]> eligiblePositions;
+
+  Piece(Board board, int y, String letter) {
+    cBoard = board;
+    if(y <= 2) {
+      color = true; //set the color of the piece. true = white
+      this.letter = letter; //set the letter. plack pieces go with upper case letters
+    }
+    else {
+      color = false;
+      this.letter = letter.toUpperCase();
+    }
   }
 
-  void setPosition(int x, int y) { //setting a new position of a piece
-    if(Game.board[x][y] != null) {
-      if(isWhite()) Game.blacks.remove(Game.board[x][y]);
-      else Game.whites.remove(Game.board[x][y]);
+  void setPosition(int x, int y) throws NullPointerException { //setting a new position of a piece
+    if(cBoard.cells[x][y] != null) {
+      if(isWhite()) cBoard.blacks.remove(cBoard.cells[x][y]); //kill a piece of different color
+      else cBoard.whites.remove(cBoard.cells[x][y]);
     }
+
     this.x = x;
     this.y = y;
-    Game.board[x][y] = this;
+    cBoard.cells[x][y] = this;
   }
 
-  void eraseCurrentPosition() {Game.board[x][y] = null;}  //erase the current position
+  void eraseCurrentPosition() {cBoard.cells[x][y] = null;}  //erase the current position
 
   int getX() {return x;}
   int getY() {return y;}
@@ -31,48 +44,48 @@ abstract class Piece {
 
   public String toString() {return letter;}
 
-  abstract boolean move();
+  abstract boolean move() throws NullPointerException;
 }
 
 
 class Pawn extends Piece {
-  Pawn(int x, int y, boolean color) {
-    super(color, "a");
+  Pawn(Board board, int x, int y) throws NullPointerException{
+    super(board, y, "a");
     setPosition(x, y);
   }
 
-  boolean move() {
-    Random rn = new Random();
-    ArrayList<int[]> eligiblePositions = new ArrayList<>();
+  boolean move() throws NullPointerException {
+    rn = new Random();
+    eligiblePositions = new ArrayList<>();
     int x = getX();
     int y = getY();
     if (isWhite()) { //calculating eligible moves if the piece is white
-      if(y == 7) return false;
-      if(y == 1 && Game.board[x][y + 1] == null && Game.board[x][y + 2] == null) {  //advance
+      if(y == cBoard.getRows() - 1) return false;
+      if(y == 1 && cBoard.cells[x][y + 1] == null && cBoard.cells[x][y + 2] == null) {  //advance
         eligiblePositions.add(new int[]{x, y + 2});
       }
-      if(Game.board[x][y + 1] == null) {  //base move
+      if(cBoard.cells[x][y + 1] == null) {  //base move
         eligiblePositions.add(new int[]{x, y + 1});
       }
-      if(x > 1 && Game.board[x - 1][y + 1] != null && !Game.board[x - 1][y + 1].isWhite()) {  //kill to the left
+      if(x > 1 && cBoard.cells[x - 1][y + 1] != null && !cBoard.cells[x - 1][y + 1].isWhite()) {  //kill to the left
         eligiblePositions.add(new int[]{x - 1, y + 1});
       }
-      if(x < 7 && Game.board[x + 1][y + 1] != null && !Game.board[x + 1][y + 1].isWhite()) {  //kill to the right
+      if(x < cBoard.getColumns() - 1 && cBoard.cells[x + 1][y + 1] != null && !cBoard.cells[x + 1][y + 1].isWhite()) {  //kill to the right
         eligiblePositions.add(new int[]{x + 1, y + 1});
       }
     }
       else {  //if the piece is black
         if(y == 0) return false;
-        if(y == 6 && Game.board[x][y - 1] == null && Game.board[x][y - 2] == null) {  //advance
+        if(y == cBoard.getRows() - 2 && cBoard.cells[x][y - 1] == null && cBoard.cells[x][y - 2] == null) {  //advance
           eligiblePositions.add(new int[]{x, y - 2});
         }
-        if(Game.board[x][y - 1] == null) {  //base move
+        if(cBoard.cells[x][y - 1] == null) {  //base move
           eligiblePositions.add(new int[]{x, y - 1});
         }
-        if(x > 1 && Game.board[x - 1][y - 1] != null && Game.board[x - 1][y - 1].isWhite()) {  //kill to the left
+        if(x > 1 && cBoard.cells[x - 1][y - 1] != null && cBoard.cells[x - 1][y - 1].isWhite()) {  //kill to the left
           eligiblePositions.add(new int[]{x - 1, y - 1});
         }
-        if(x < 7 && Game.board[x + 1][y - 1] != null && Game.board[x + 1][y - 1].isWhite()) {  //kill to the right
+        if(x < cBoard.getColumns() - 1 && cBoard.cells[x + 1][y - 1] != null && cBoard.cells[x + 1][y - 1].isWhite()) {  //kill to the right
           eligiblePositions.add(new int[]{x + 1, y - 1});
         }
       }
@@ -80,9 +93,25 @@ class Pawn extends Piece {
       if(eligiblePositions.size() == 0) return false;
       int[] temp = eligiblePositions.get(rn.nextInt(eligiblePositions.size()));
       eraseCurrentPosition();
+      cBoard.pw.println("\n" + this + " [" + x + ", " + y + "]");
       setPosition(temp[0], temp[1]);
       return true;
 
+  }
+}
+
+class Rook extends Piece {
+  Rook(Board board, int x, int y) throws NullPointerException {
+    super(board, y, "r");
+    setPosition(x, y);
+  }
+
+  boolean move() throws NullPointerException {
+    int x = getX();
+    int y = getY();
+
+
+    return true;
   }
 }
 
@@ -104,16 +133,6 @@ class Queen extends Piece {
 
   public String toString() {
     return "q";
-  }
-}
-
-class Rook extends Piece {
-  Rook(int x, int y) {
-    setPosition(x, y);
-  }
-
-  public String toString() {
-    return "r";
   }
 }
 
