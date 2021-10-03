@@ -18,8 +18,8 @@ class Board {
     this.columns = columns;
 
     cells = new Piece[rows][columns];
-    whites = new ArrayList<>(columns);
-    blacks = new ArrayList<>(columns);
+    whites = new ArrayList<>();
+    blacks = new ArrayList<>();
   }
 
   int getRows() {return rows;}
@@ -33,13 +33,13 @@ class Board {
     //random piece makes a move
     for(int i = 0; i < setOfPieces.size(); i++) {   //it each piece has a try to make an eligible move
       randInt = rn.nextInt(setOfPieces.size() - i); //get a random number
-      pw.print(randInt);
+      pw.print(randInt + "\t" + setOfPieces.get(randInt) + " [" + setOfPieces.get(randInt).getX() + ", " + setOfPieces.get(randInt).getY() + "]");
       if(setOfPieces.get(randInt).move()) return;   //random piece makes a move. if a move was successful go to next turn
       else {                                        //if move didn't succeed
         setOfPieces.add(setOfPieces.get(randInt));  //set the piece that couldn't move at the last position
         setOfPieces.remove(randInt);                //exclude this piece from the next random selection
+        pw.println();
       }
-      pw.println();
     }
     throw new ChessException("No piece can make a move. This is a draw"); //is there wasn't any successful moves
   }

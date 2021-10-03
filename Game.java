@@ -17,16 +17,16 @@ class Game {
       return;
     }
 
-    try { //adding black pieces to the board
+    //try { //adding black pieces to the board
       for(int i = 0; i < columns; i++) {            //add 8 pawns to the list of pieces
         board.blacks.add(new Pawn(board, i, rows - 2));
       }
       board.blacks.add(new Rook(board, 0, rows - 1));
       board.blacks.add(new Rook(board, columns - 1, rows - 1));
-    } catch (Exception e) {
-      board.pw.println("Couldn't create a black piece");
-      return;
-    }
+    //} catch (Exception e) {
+    //  board.pw.println("Couldn't create a black piece");
+    //  return;
+    //}
 
     int turn = 0; //for counting turns
     while(true) { //playing the game
