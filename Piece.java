@@ -171,10 +171,9 @@ class Knight extends Piece {
     eligiblePositions = new ArrayList<>();
     int x = getX();
     int y = getY();
-    int newX, newY;
 
-    newX = x + 1;
-    newY = y - 2;
+    int newX = x + 1;
+    int newY = y - 2;
     if(newX < cBoard.getColumns() - 1 && newY > 1) {
       if(cBoard.cells[newX][newY] == null || (isWhite() ^ cBoard.cells[newX][newY].isWhite())) {  //if the new cell is empty or contains a piece of different color
       eligiblePositions.add(new int[]{newX, newY});
@@ -236,12 +235,198 @@ class Knight extends Piece {
   }
 }
 
-/*class King extends Piece {
-  King
+class Bishop extends Piece {
+  Bishop(Board board, int x, int y) {
+    super(board, x, y, "b");
+  }
+
+  boolean move() throws NullPointerException {
+    rn = new Random();
+    eligiblePositions = new ArrayList<>();
+    int x = getX();
+    int y = getY();
+
+    for(int i = x + 1, j = y + 1; i < cBoard.getRows() && j < cBoard.getColumns(); i++, j++) {
+      if(cBoard.cells[i][j] == null) {
+        eligiblePositions.add(new int[]{i, j});
+        continue;
+      }
+      if(isWhite() ^ cBoard.cells[i][j].isWhite()) {
+        eligiblePositions.add(new int[]{i, j});
+        break;
+      }
+      else break;
+    }
+    for(int i = x + 1, j = y - 1; i < cBoard.getRows() && j >= 0; i++, j--) {
+      if(cBoard.cells[i][j] == null) {
+        eligiblePositions.add(new int[]{i, j});
+        continue;
+      }
+      if(isWhite() ^ cBoard.cells[i][j].isWhite()) {
+        eligiblePositions.add(new int[]{i, j});
+        break;
+      }
+      else break;
+    }
+    for(int i = x - 1, j = y - 1; i >= 0 && j >= 0; i--, j--) {
+      if(cBoard.cells[i][j] == null) {
+        eligiblePositions.add(new int[]{i, j});
+        continue;
+      }
+      if(isWhite() ^ cBoard.cells[i][j].isWhite()) {
+        eligiblePositions.add(new int[]{i, j});
+        break;
+      }
+      else break;
+    }
+    for(int i = x - 1, j = y + 1; i >= 0 && j < cBoard.getColumns(); i--, j++) {
+      if(cBoard.cells[i][j] == null) {
+        eligiblePositions.add(new int[]{i, j});
+        continue;
+      }
+      if(isWhite() ^ cBoard.cells[i][j].isWhite()) {
+        eligiblePositions.add(new int[]{i, j});
+        break;
+      }
+      else break;
+    }
+
+    if(eligiblePositions.size() == 0) return false;
+    setPosition(eligiblePositions.get(rn.nextInt(eligiblePositions.size())));
+    return true;
+  }
+}
 
 class Queen extends Piece {
-  Queen
+  Queen(Board board, int x, int y) {
+    super(board, x, y, "q");
+  }
 
-class Bishop extends Piece {
-  Bishop
-*/
+  boolean move() throws NullPointerException {
+    rn = new Random();
+    eligiblePositions = new ArrayList<>();
+    int x = getX();
+    int y = getY();
+
+    for(int i = x + 1; i < cBoard.getColumns(); i++) {
+      if(cBoard.cells[i][y] == null) {
+        eligiblePositions.add(new int[]{i, y});
+        continue;
+      }
+      if(isWhite() ^ cBoard.cells[i][y].isWhite()) {
+        eligiblePositions.add(new int[]{i, y});
+        break;
+      }
+      else break;
+    }
+    for(int i = x - 1; i >= 0; i--) {
+      if(cBoard.cells[i][y] == null) {
+        eligiblePositions.add(new int[]{i, y});
+        continue;
+      }
+      if(isWhite() ^ cBoard.cells[i][y].isWhite()) {
+        eligiblePositions.add(new int[]{i, y});
+        break;
+      }
+      else break;
+    }
+    for(int i = y + 1; i < cBoard.getRows(); i++) {
+      if(cBoard.cells[x][i] == null) {
+        eligiblePositions.add(new int[]{x, i});
+        continue;
+      }
+      if(isWhite() ^ cBoard.cells[x][i].isWhite()) {
+        eligiblePositions.add(new int[]{x, i});
+        break;
+      }
+      else break;
+    }
+    for(int i = y - 1; i >= 0; i--) {
+      if(cBoard.cells[x][i] == null) {
+        eligiblePositions.add(new int[]{x, i});
+        continue;
+      }
+      if(isWhite() ^ cBoard.cells[x][i].isWhite()) {
+        eligiblePositions.add(new int[]{x, i});
+        break;
+      }
+      else break;
+    }
+    for(int i = x + 1, j = y + 1; i < cBoard.getRows() && j < cBoard.getColumns(); i++, j++) {
+      if(cBoard.cells[i][j] == null) {
+        eligiblePositions.add(new int[]{i, j});
+        continue;
+      }
+      if(isWhite() ^ cBoard.cells[i][j].isWhite()) {
+        eligiblePositions.add(new int[]{i, j});
+        break;
+      }
+      else break;
+    }
+    for(int i = x + 1, j = y - 1; i < cBoard.getRows() && j >= 0; i++, j--) {
+      if(cBoard.cells[i][j] == null) {
+        eligiblePositions.add(new int[]{i, j});
+        continue;
+      }
+      if(isWhite() ^ cBoard.cells[i][j].isWhite()) {
+        eligiblePositions.add(new int[]{i, j});
+        break;
+      }
+      else break;
+    }
+    for(int i = x - 1, j = y - 1; i >= 0 && j >= 0; i--, j--) {
+      if(cBoard.cells[i][j] == null) {
+        eligiblePositions.add(new int[]{i, j});
+        continue;
+      }
+      if(isWhite() ^ cBoard.cells[i][j].isWhite()) {
+        eligiblePositions.add(new int[]{i, j});
+        break;
+      }
+      else break;
+    }
+    for(int i = x - 1, j = y + 1; i >= 0 && j < cBoard.getColumns(); i--, j++) {
+      if(cBoard.cells[i][j] == null) {
+        eligiblePositions.add(new int[]{i, j});
+        continue;
+      }
+      if(isWhite() ^ cBoard.cells[i][j].isWhite()) {
+        eligiblePositions.add(new int[]{i, j});
+        break;
+      }
+      else break;
+    }
+
+    if(eligiblePositions.size() == 0) return false;
+    setPosition(eligiblePositions.get(rn.nextInt(eligiblePositions.size())));
+    return true;
+  }
+}
+
+class King extends Piece {
+  King(Board board, int x, int y) {
+    super(board, x, y, "k");
+  }
+
+  boolean move() throws NullPointerException {
+    rn = new Random();
+    eligiblePositions = new ArrayList<>();
+    int x = getX();
+    int y = getY();
+
+    for(int i = x - 1; i <= x + 1; i++) {
+      if(i < 0 || i >= cBoard.getColumns()) continue;
+      for(int j = y - 1; j <= y + 1; j++) {
+        if(j < 0 || j >= cBoard.getRows()) continue;
+        if(i == x && j == y) continue;
+        if(cBoard.cells[i][j] == null || isWhite() ^ cBoard.cells[i][j].isWhite()) {
+          eligiblePositions.add(new int[]{i, j});
+        }
+      }
+    }
+
+    if(eligiblePositions.size() == 0) return false;
+    setPosition(eligiblePositions.get(rn.nextInt(eligiblePositions.size())));
+    return true;
+  }
+}

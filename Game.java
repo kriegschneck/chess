@@ -14,6 +14,10 @@ class Game {
       board.whites.add(new Rook(board, columns - 1, 0));
       board.whites.add(new Knight(board, 1, 0));
       board.whites.add(new Knight(board, columns - 2, 0));
+      board.whites.add(new Bishop(board, 2, 0));
+      board.whites.add(new Bishop(board, columns - 3, 0));
+      board.whites.add(new Queen(board, 3, 0));
+      board.whites.add(new King(board, 4, 0));
     } catch (Exception e) {
       board.pw.println("Couldn't create a white piece");
       return;
@@ -27,6 +31,10 @@ class Game {
       board.blacks.add(new Rook(board, columns - 1, rows - 1));
       board.blacks.add(new Knight(board, 1, rows - 1));
       board.blacks.add(new Knight(board, columns - 2, rows - 1));
+      board.blacks.add(new Bishop(board, 2, rows - 1));
+      board.blacks.add(new Bishop(board, columns - 3, rows - 1));
+      board.blacks.add(new Queen(board, 3, rows - 1));
+      board.blacks.add(new King(board, 4, rows - 1));
     } catch (Exception e) {
       board.pw.println("Couldn't create a black piece");
       return;
@@ -44,14 +52,14 @@ class Game {
       }
 
       try {
-        Thread.sleep(100); //time between moves
+        Thread.sleep(200); //time between moves
       } catch (Exception e) {
         board.pw.println("The game was interrupted");
         break;
       }
     }
-    board.pw.println(board.whites);
-    board.pw.println(board.blacks);
+    //board.pw.println(board.whites);
+    //board.pw.println(board.blacks);
 
   }
 }
