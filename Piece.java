@@ -7,17 +7,20 @@ abstract class Piece {
   private boolean color;    //true = white, false = black
   private String letter;    //a letter to print
   private int x, y;         //a position of a figure
-  Board cBoard;      //a link to the current board to play on
+  Board cBoard;             //a link to the current board to play on
 
   //technical variables
   Random rn;
   ArrayList<int[]> eligiblePositions;
 
-  Piece(Board board, int y, String letter) {
+  Piece(Board board, int x, int y, String letter) {
     cBoard = board;
+    this.x = x;
+    this.y = y;
+    cBoard.cells[x][y] = this;  //set position on the board
     if(y <= 2) {
       color = true; //set the color of the piece. true = white
-      this.letter = letter; //set the letter. plack pieces go with upper case letters
+      this.letter = letter; //set the letter. black pieces go with upper case letters
     }
     else {
       color = false;
@@ -25,18 +28,17 @@ abstract class Piece {
     }
   }
 
-  void setPosition(int x, int y) throws NullPointerException { //setting a new position of a piece
+  void setPosition(int[] newPosition) throws NullPointerException { //setting a new position of a piece
     if(cBoard.cells[x][y] != null) {
-      if(isWhite()) cBoard.blacks.remove(cBoard.cells[x][y]); //kill a piece of different color
-      else cBoard.whites.remove(cBoard.cells[x][y]);
+      if(isWhite()) cBoard.blacks.remove(cBoard.cells[newPosition[0]][newPosition[1]]); //kill a piece of different color on a new position
+      else cBoard.whites.remove(cBoard.cells[newPosition[0]][newPosition[1]]);
     }
-
-    this.x = x;
-    this.y = y;
-    cBoard.cells[x][y] = this;
+    cBoard.cells[x][y] = null;  //erase the current position of a piece
+    x = newPosition[0];         //set a new coordinates
+    y = newPosition[1];
+    cBoard.cells[x][y] = this;  //move a piece to a new position
+    cBoard.pw.println(" - [" + x + ", " + y + "]");
   }
-
-  void eraseCurrentPosition() {cBoard.cells[x][y] = null;}  //erase the current position
 
   int getX() {return x;}
   int getY() {return y;}
@@ -49,9 +51,8 @@ abstract class Piece {
 
 
 class Pawn extends Piece {
-  Pawn(Board board, int x, int y) throws NullPointerException{
-    super(board, y, "a");
-    setPosition(x, y);
+  Pawn(Board board, int x, int y) {
+    super(board, x, y, "a");
   }
 
   boolean move() throws NullPointerException {
@@ -59,8 +60,6 @@ class Pawn extends Piece {
     eligiblePositions = new ArrayList<>();
     int x = getX();
     int y = getY();
-
-    cBoard.pw.print("\t" + this + " [" + x + ", " + y + "]");
 
     if (isWhite()) { //calculating eligible moves if the piece is white
       if(y == cBoard.getRows() - 1) return false;
@@ -94,19 +93,15 @@ class Pawn extends Piece {
       }
 
       if(eligiblePositions.size() == 0) return false;
-      int[] temp = eligiblePositions.get(rn.nextInt(eligiblePositions.size()));
-      eraseCurrentPosition();
-      setPosition(temp[0], temp[1]);
-      cBoard.pw.println(" - [" + getX() + ", " + getY() + "]");
+      setPosition(eligiblePositions.get(rn.nextInt(eligiblePositions.size())));
       return true;
 
   }
 }
 
 class Rook extends Piece {
-  Rook(Board board, int x, int y) throws NullPointerException {
-    super(board, y, "r");
-    setPosition(x, y);
+  Rook(Board board, int x, int y) {
+    super(board, x, y, "r");
   }
 
   boolean move() throws NullPointerException {
@@ -114,13 +109,13 @@ class Rook extends Piece {
     eligiblePositions = new ArrayList<>();
     int x = getX();
     int y = getY();
-    cBoard.pw.print("\t" + this + " [" + x + ", " + y + "]");
+
     for(int i = x + 1; i < cBoard.getColumns(); i++) {
       if(cBoard.cells[i][y] == null) {
         eligiblePositions.add(new int[]{i, y});
         continue;
       }
-      if(isWhite() != cBoard.cells[i][y].isWhite()) {
+      if(isWhite() ^ cBoard.cells[i][y].isWhite()) {
         eligiblePositions.add(new int[]{i, y});
         break;
       }
@@ -131,7 +126,7 @@ class Rook extends Piece {
         eligiblePositions.add(new int[]{i, y});
         continue;
       }
-      if(isWhite() != cBoard.cells[i][y].isWhite()) {
+      if(isWhite() ^ cBoard.cells[i][y].isWhite()) {
         eligiblePositions.add(new int[]{i, y});
         break;
       }
@@ -142,7 +137,7 @@ class Rook extends Piece {
         eligiblePositions.add(new int[]{x, i});
         continue;
       }
-      if(isWhite() != cBoard.cells[x][i].isWhite()) {
+      if(isWhite() ^ cBoard.cells[x][i].isWhite()) {
         eligiblePositions.add(new int[]{x, i});
         break;
       }
@@ -153,7 +148,7 @@ class Rook extends Piece {
         eligiblePositions.add(new int[]{x, i});
         continue;
       }
-      if(isWhite() != cBoard.cells[x][i].isWhite()) {
+      if(isWhite() ^ cBoard.cells[x][i].isWhite()) {
         eligiblePositions.add(new int[]{x, i});
         break;
       }
@@ -161,51 +156,92 @@ class Rook extends Piece {
     }
 
     if(eligiblePositions.size() == 0) return false;
-    int[] temp = eligiblePositions.get(rn.nextInt(eligiblePositions.size()));
-    eraseCurrentPosition();
-    setPosition(temp[0], temp[1]);
-    cBoard.pw.println(" - [" + getX() + ", " + getY() + "]");
+    setPosition(eligiblePositions.get(rn.nextInt(eligiblePositions.size())));
+    return true;
+  }
+}
+
+class Knight extends Piece {
+  Knight(Board board, int x, int y) {
+    super(board, x, y, "h");
+  }
+
+  boolean move() throws NullPointerException {
+    rn = new Random();
+    eligiblePositions = new ArrayList<>();
+    int x = getX();
+    int y = getY();
+    int newX, newY;
+
+    newX = x + 1;
+    newY = y - 2;
+    if(newX < cBoard.getColumns() - 1 && newY > 1) {
+      if(cBoard.cells[newX][newY] == null || (isWhite() ^ cBoard.cells[newX][newY].isWhite())) {  //if the new cell is empty or contains a piece of different color
+      eligiblePositions.add(new int[]{newX, newY});
+      }
+    }
+    newX = x + 1;
+    newY = y + 2;
+    if(newX < cBoard.getColumns() - 1 && newY < cBoard.getRows() - 2) {
+      if(cBoard.cells[newX][newY] == null || (isWhite() ^ cBoard.cells[newX][newY].isWhite())) {  //if the new cell is empty or contains a piece of different color
+      eligiblePositions.add(new int[]{newX, newY});
+      }
+    }
+    newX = x - 1;
+    newY = y - 2;
+    if(newX > 0 && newY > 1) {
+      if(cBoard.cells[newX][newY] == null || (isWhite() ^ cBoard.cells[newX][newY].isWhite())) {  //if the new cell is empty or contains a piece of different color
+      eligiblePositions.add(new int[]{newX, newY});
+      }
+    }
+    newX = x - 1;
+    newY = y + 2;
+    if(newX > 0 && newY < cBoard.getRows() - 2) {
+      if(cBoard.cells[newX][newY] == null || (isWhite() ^ cBoard.cells[newX][newY].isWhite())) {  //if the new cell is empty or contains a piece of different color
+      eligiblePositions.add(new int[]{newX, newY});
+      }
+    }
+    newX = x + 2;
+    newY = y - 1;
+    if(newX < cBoard.getColumns() - 2 && newY > 0) {
+      if(cBoard.cells[newX][newY] == null || (isWhite() ^ cBoard.cells[newX][newY].isWhite())) {  //if the new cell is empty or contains a piece of different color
+      eligiblePositions.add(new int[]{newX, newY});
+      }
+    }
+    newX = x + 2;
+    newY = y + 1;
+    if(newX < cBoard.getColumns() - 2 && newY < cBoard.getRows() - 1) {
+      if(cBoard.cells[newX][newY] == null || (isWhite() ^ cBoard.cells[newX][newY].isWhite())) {  //if the new cell is empty or contains a piece of different color
+      eligiblePositions.add(new int[]{newX, newY});
+      }
+    }
+    newX = x - 2;
+    newY = y - 1;
+    if(newX > 1 && newY > 0) {
+      if(cBoard.cells[newX][newY] == null || (isWhite() ^ cBoard.cells[newX][newY].isWhite())) {  //if the new cell is empty or contains a piece of different color
+      eligiblePositions.add(new int[]{newX, newY});
+      }
+    }
+    newX = x - 2;
+    newY = y + 1;
+    if(newX > 1 && newY < cBoard.getRows() - 1) {
+      if(cBoard.cells[newX][newY] == null || (isWhite() ^ cBoard.cells[newX][newY].isWhite())) {  //if the new cell is empty or contains a piece of different color
+      eligiblePositions.add(new int[]{newX, newY});
+      }
+    }
+
+    if(eligiblePositions.size() == 0) return false;
+    setPosition(eligiblePositions.get(rn.nextInt(eligiblePositions.size())));
     return true;
   }
 }
 
 /*class King extends Piece {
-  King(int x, int y) {
-    setPosition(x, y);
-  }
-
-  public String toString() {
-    return "k";
-  }
-
-}
+  King
 
 class Queen extends Piece {
-  Queen(int x, int y) {
-    setPosition(x, y);
-  }
-
-  public String toString() {
-    return "q";
-  }
-}
+  Queen
 
 class Bishop extends Piece {
-  Bishop(int x, int y) {
-    setPosition(x, y);
-  }
-
-  public String toString() {
-    return "b";
-  }
-}
-
-class Knight extends Piece {
-  Knight(int x, int y) {
-    setPosition(x, y);
-  }
-
-  public String toString() {
-    return "k";
-  }
-}*/
+  Bishop
+*/

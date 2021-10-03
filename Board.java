@@ -13,11 +13,11 @@ class Board {
   ArrayList<Piece> whites;  //list of white pieces
   ArrayList<Piece> blacks;  //list of black pieces
 
-  Board(int rows, int columns) {
-    this.rows = rows;
+  Board(int columns, int rows) {
     this.columns = columns;
+    this.rows = rows;
 
-    cells = new Piece[rows][columns];
+    cells = new Piece[columns][rows];
     whites = new ArrayList<>();
     blacks = new ArrayList<>();
   }
