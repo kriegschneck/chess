@@ -6,7 +6,7 @@ class Knight extends Piece {
   }
 
   boolean move() {
-    eligiblePositions = new ArrayList<>();
+	  ArrayList<Position> eligiblePositions = new ArrayList<>();
     int x = piecesPosition.getX();
 	int y = piecesPosition.getY();
 
@@ -70,8 +70,7 @@ class Knight extends Piece {
     if(eligiblePositions.size() == 0) return false;
 	else {
 		int randInt = (int) Math.random() * eligiblePositions.size();	//get a random int from the range of eligible positions
-		setPosition(eligiblePositions.get(randInt));
-		eligiblePositions.clear();
+		currentBoard.setPositionOnBoard(this, eligiblePositions.get(randInt));
 		return true;
 	}
     
