@@ -13,31 +13,31 @@ class Pawn extends Piece {
 		
 		if (isWhite()) { //calculating eligible moves if the piece is white
 			if(y == currentBoard.getRows() - 1) return false;
-			if(y == 1 && currentBoard.whatInCell(x, y + 1) == null && currentBoard.whatInCell(x, y + 2) == null) {  //advance
+			if(y == 1 && currentBoard.isNullHere(x, y + 1) && currentBoard.isNullHere(x, y + 2)) {  //advance
 				eligiblePositions.add(new Position(x, y + 2));
 			}
-			if(currentBoard.whatInCell(x, y + 1) == null) {  //base move
+			if(currentBoard.isNullHere(x, y + 1)) {  //base move
 				eligiblePositions.add(new Position(x, y + 1));
 			}
-			if(x > 1 && currentBoard.whatInCell(x - 1, y + 1) != null && !currentBoard.whatInCell(x - 1, y + 1).isWhite()) {  //kill to the left
+			if(x > 0 && !currentBoard.isNullHere(x - 1, y + 1) && currentBoard.isEnemyHere(this, x - 1, y + 1)) {  //kill to the left
 				eligiblePositions.add(new Position(x - 1, y + 1));
 			}
-			if(x < currentBoard.getColumns() - 1 && currentBoard.whatInCell[x + 1][y + 1] != null && !currentBoard.whatInCell[x + 1][y + 1].isWhite()) {  //kill to the right
+			if(x < currentBoard.getColumns() - 1 && !currentBoard.isNullHere(x + 1, y + 1) && currentBoard.isEnemyHere(this, x + 1, y + 1)) {  //kill to the right
 				eligiblePositions.add(new Position(x + 1, y + 1));
 			}
 		}
 		else {  //if the piece is black
 			if(y == 0) return false;
-			if(y == currentBoard.getRows() - 2 && currentBoard.whatInCell[x][y - 1] == null && currentBoard.whatInCell[x][y - 2] == null) {  //advance
+			if(y == currentBoard.getRows() - 2 && currentBoard.isNullHere(x, y - 1) && currentBoard.isNullHere(x, y - 2)) {  //advance
 				eligiblePositions.add(new Position(x, y - 2));
 			}
-			if(currentBoard.whatInCell[x][y - 1] == null) {  //base move
+			if(currentBoard.isNullHere(x, y - 1)) {  //base move
 				eligiblePositions.add(new Position(x, y - 1));
 			}
-			if(x > 1 && currentBoard.whatInCell[x - 1][y - 1] != null && currentBoard.whatInCell[x - 1][y - 1].isWhite()) {  //kill to the left
+			if(x > 0 && !currentBoard.isNullHere(x - 1, y - 1) && currentBoard.isEnemyHere(this, x - 1, y - 1)) {  //kill to the left
 				eligiblePositions.add(new Position(x - 1, y - 1));
 			}
-			if(x < currentBoard.getColumns() - 1 && currentBoard.whatInCell[x + 1][y - 1] != null && currentBoard.whatInCell[x + 1][y - 1].isWhite()) {  //kill to the right
+			if(x < currentBoard.getColumns() - 1 && !currentBoard.isNullHere(x + 1, y - 1) && currentBoard.isEnemyHere(this, x + 1, y - 1)) {  //kill to the right
 				eligiblePositions.add(new Position(x + 1, y - 1));
 			}
 		}

@@ -50,8 +50,8 @@ class Board {
 
 	//choosing a piece to make a move
 	void pieceSelectionAndMove(int turn) throws Exception {
-		if(turn % 2 == 0) setOfPieces = whites;
-		else setOfPieces = blacks;
+		if(turn % 2 == 0) setOfPieces = blacks;
+		else setOfPieces = whites;
 		
 		int randInt;
 		//random piece makes a move
@@ -84,14 +84,16 @@ class Board {
 		pw.println(" - " + piece.piecesPosition);
 	}
 	
-	boolean isNullHere(Piece.Position position) {
-		if(cells[position.getX()][position.getY()] == null) return true;
+	boolean isNullHere(int x, int y) {
+		if(cells[x][y] == null) return true;
 		else return false;
 	}
 	
-	boolean isItSameColor(boolean isWhite, Piece.Position position) {
-		if()
-		return true;
+	boolean isEnemyHere(Piece piece, int x, int y) {	
+		if(piece.isWhite() ^ cells[x][y].isWhite()) {
+			return true;
+		}
+		else return false;
 	}
 	
 	//printing the board with the pieces

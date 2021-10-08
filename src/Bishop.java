@@ -11,11 +11,11 @@ class Bishop extends Piece {
 		int y = piecesPosition.getY();
 
 		for(int i = x + 1, j = y + 1; i < currentBoard.getRows() && j < currentBoard.getColumns(); i++, j++) {
-			if(currentBoard.cells[i][j] == null) {
+			if(currentBoard.isNullHere(i, j)) {
 				eligiblePositions.add(new Position(i, j));
 				continue;
 			}
-			if(isWhite() ^ currentBoard.cells[i][j].isWhite()) {
+			if(currentBoard.isEnemyHere(this, i, j)) {
 				eligiblePositions.add(new Position(i, j));
 				break;
 			}
@@ -23,11 +23,11 @@ class Bishop extends Piece {
 		}
 		
 		for(int i = x + 1, j = y - 1; i < currentBoard.getRows() && j >= 0; i++, j--) {
-			if(currentBoard.cells[i][j] == null) {
+			if(currentBoard.isNullHere(i, j)) {
 				eligiblePositions.add(new Position(i, j));
 				continue;
 			}
-			if(isWhite() ^ currentBoard.cells[i][j].isWhite()) {
+			if(currentBoard.isEnemyHere(this, i, j)) {
 				eligiblePositions.add(new Position(i, j));
 				break;
 			}
@@ -35,11 +35,11 @@ class Bishop extends Piece {
 		}
 		
 		for(int i = x - 1, j = y - 1; i >= 0 && j >= 0; i--, j--) {
-			if(currentBoard.cells[i][j] == null) {
+			if(currentBoard.isNullHere(i, j)) {
 				eligiblePositions.add(new Position(i, j));
 				continue;
 			}
-			if(isWhite() ^ currentBoard.cells[i][j].isWhite()) {
+			if(currentBoard.isEnemyHere(this, i, j)) {
 				eligiblePositions.add(new Position(i, j));
 				break;
 			}
@@ -47,11 +47,11 @@ class Bishop extends Piece {
 		}
 		
 		for(int i = x - 1, j = y + 1; i >= 0 && j < currentBoard.getColumns(); i--, j++) {
-			if(currentBoard.cells[i][j] == null) {
+			if(currentBoard.isNullHere(i, j)) {
 				eligiblePositions.add(new Position(i, j));
 				continue;
 			}
-			if(isWhite() ^ currentBoard.cells[i][j].isWhite()) {
+			if(currentBoard.isEnemyHere(this, i, j)) {
 				eligiblePositions.add(new Position(i, j));
 				break;
 			}

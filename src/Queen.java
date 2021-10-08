@@ -11,59 +11,56 @@ class Queen extends Piece {
 		int y = piecesPosition.getY();
 		
 		for(int i = x + 1; i < currentBoard.getColumns(); i++) {
-			if(currentBoard.cells[i][y] == null) {
+			if(currentBoard.isNullHere(i, y)) {
 				eligiblePositions.add(new Position(i, y));
 				continue;
 			}
-			if(isWhite() ^ currentBoard.cells[i][y].isWhite()) {
+			if(currentBoard.isEnemyHere(this, i, y)) {
+				eligiblePositions.add(new Position(i, y));
+				break;
+			}
+			else break;
+    		}
+    	for(int i = x - 1; i >= 0; i--) {
+			if(currentBoard.isNullHere(i, y)) {
+				eligiblePositions.add(new Position(i, y));
+				continue;
+			}
+			if(currentBoard.isEnemyHere(this, i, y)) {
 				eligiblePositions.add(new Position(i, y));
 				break;
 			}
 			else break;
 		}
-		
-		for(int i = x - 1; i >= 0; i--) {
-			if(currentBoard.cells[i][y] == null) {
-				eligiblePositions.add(new Position(i, y));
-				continue;
-			}
-			if(isWhite() ^ currentBoard.cells[i][y].isWhite()) {
-				eligiblePositions.add(new Position(i, y));
-				break;
-			}
-			else break;
-		}
-		
-		for(int i = y + 1; i < currentBoard.getRows(); i++) {
-			if(currentBoard.cells[x][i] == null) {
+    	for(int i = y + 1; i < currentBoard.getRows(); i++) {
+			if(currentBoard.isNullHere(x, i)) {
 				eligiblePositions.add(new Position(x, i));
 				continue;
 			}
-			if(isWhite() ^ currentBoard.cells[x][i].isWhite()) {
+			if(currentBoard.isEnemyHere(this, x, i)) {
 				eligiblePositions.add(new Position(x, i));
 				break;
 			}
 			else break;
 		}
-		
-		for(int i = y - 1; i >= 0; i--) {
-			if(currentBoard.cells[x][i] == null) {
+    	for(int i = y - 1; i >= 0; i--) {
+			if(currentBoard.isNullHere(x, i)) {
 				eligiblePositions.add(new Position(x, i));
 				continue;
 			}
-			if(isWhite() ^ currentBoard.cells[x][i].isWhite()) {
+			if(currentBoard.isEnemyHere(this, x, i)) {
 				eligiblePositions.add(new Position(x, i));
 				break;
 			}
 			else break;
 		}
 		
-		for(int i = x + 1, j = y + 1; i < currentBoard.getRows() && j < currentBoard.getColumns(); i++, j++) {
-			if(currentBoard.cells[i][j] == null) {
+    	for(int i = x + 1, j = y + 1; i < currentBoard.getRows() && j < currentBoard.getColumns(); i++, j++) {
+			if(currentBoard.isNullHere(i, j)) {
 				eligiblePositions.add(new Position(i, j));
 				continue;
 			}
-			if(isWhite() ^ currentBoard.cells[i][j].isWhite()) {
+			if(currentBoard.isEnemyHere(this, i, j)) {
 				eligiblePositions.add(new Position(i, j));
 				break;
 			}
@@ -71,11 +68,11 @@ class Queen extends Piece {
 		}
 		
 		for(int i = x + 1, j = y - 1; i < currentBoard.getRows() && j >= 0; i++, j--) {
-			if(currentBoard.cells[i][j] == null) {
+			if(currentBoard.isNullHere(i, j)) {
 				eligiblePositions.add(new Position(i, j));
 				continue;
 			}
-			if(isWhite() ^ currentBoard.cells[i][j].isWhite()) {
+			if(currentBoard.isEnemyHere(this, i, j)) {
 				eligiblePositions.add(new Position(i, j));
 				break;
 			}
@@ -83,11 +80,11 @@ class Queen extends Piece {
 		}
 		
 		for(int i = x - 1, j = y - 1; i >= 0 && j >= 0; i--, j--) {
-			if(currentBoard.cells[i][j] == null) {
+			if(currentBoard.isNullHere(i, j)) {
 				eligiblePositions.add(new Position(i, j));
 				continue;
 			}
-			if(isWhite() ^ currentBoard.cells[i][j].isWhite()) {
+			if(currentBoard.isEnemyHere(this, i, j)) {
 				eligiblePositions.add(new Position(i, j));
 				break;
 			}
@@ -95,11 +92,11 @@ class Queen extends Piece {
 		}
 		
 		for(int i = x - 1, j = y + 1; i >= 0 && j < currentBoard.getColumns(); i--, j++) {
-			if(currentBoard.cells[i][j] == null) {
+			if(currentBoard.isNullHere(i, j)) {
 				eligiblePositions.add(new Position(i, j));
 				continue;
 			}
-			if(isWhite() ^ currentBoard.cells[i][j].isWhite()) {
+			if(currentBoard.isEnemyHere(this, i, j)) {
 				eligiblePositions.add(new Position(i, j));
 				break;
 			}

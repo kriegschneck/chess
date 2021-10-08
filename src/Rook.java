@@ -11,44 +11,44 @@ class Rook extends Piece {
 		int y = piecesPosition.getY();
 		
 		for(int i = x + 1; i < currentBoard.getColumns(); i++) {
-			if(currentBoard.whatInCell[i][y] == null) {
+			if(currentBoard.isNullHere(i, y)) {
 				eligiblePositions.add(new Position(i, y));
 				continue;
 			}
-			if(isWhite() ^ currentBoard.whatInCell[i][y].isWhite()) {
+			if(currentBoard.isEnemyHere(this, i, y)) {
 				eligiblePositions.add(new Position(i, y));
 				break;
 			}
 			else break;
     		}
     	for(int i = x - 1; i >= 0; i--) {
-			if(currentBoard.whatInCell[i][y] == null) {
+			if(currentBoard.isNullHere(i, y)) {
 				eligiblePositions.add(new Position(i, y));
 				continue;
 			}
-			if(isWhite() ^ currentBoard.cells[i][y].isWhite()) {
+			if(currentBoard.isEnemyHere(this, i, y)) {
 				eligiblePositions.add(new Position(i, y));
 				break;
 			}
 			else break;
 		}
     	for(int i = y + 1; i < currentBoard.getRows(); i++) {
-			if(currentBoard.whatInCell[x][i] == null) {
+			if(currentBoard.isNullHere(x, i)) {
 				eligiblePositions.add(new Position(x, i));
 				continue;
 			}
-			if(isWhite() ^ currentBoard.whatInCell[x][i].isWhite()) {
+			if(currentBoard.isEnemyHere(this, x, i)) {
 				eligiblePositions.add(new Position(x, i));
 				break;
 			}
 			else break;
 		}
     	for(int i = y - 1; i >= 0; i--) {
-			if(currentBoard.whatInCell[x][i] == null) {
+			if(currentBoard.isNullHere(x, i)) {
 				eligiblePositions.add(new Position(x, i));
 				continue;
 			}
-			if(isWhite() ^ currentBoard.whatInCell[x][i].isWhite()) {
+			if(currentBoard.isEnemyHere(this, x, i)) {
 				eligiblePositions.add(new Position(x, i));
 				break;
 			}
@@ -58,7 +58,7 @@ class Rook extends Piece {
 		if(eligiblePositions.size() == 0) return false;
 		else {
 			int randInt = (int) Math.random() * eligiblePositions.size();	//get a random int from the range of eligible positions
-			currentBoard.setPositionOnBoard(this, piecesPosition);
+			currentBoard.setPositionOnBoard(this, eligiblePositions.get(randInt));
 			return true;
 		}
     

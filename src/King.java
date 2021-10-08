@@ -15,7 +15,7 @@ class King extends Piece {
 			for(int j = y - 1; j <= y + 1; j++) {
 				if(j < 0 || j >= currentBoard.getRows()) continue;
 				if(i == x && j == y) continue;
-				if(currentBoard.cells[i][j] == null || isWhite() ^ currentBoard.cells[i][j].isWhite()) {
+				if(currentBoard.isNullHere(i, j) || currentBoard.isEnemyHere(this, i, j)) {
 					eligiblePositions.add(new Position(i, j));
 				}
 			}
