@@ -5,10 +5,10 @@ class Bishop extends Piece {
 		super(board, x, y, "b");
 	}
 
-	boolean move() {
-		ArrayList<Position> eligiblePositions = new ArrayList<>();
-		int x = piecesPosition.getX();
-		int y = piecesPosition.getY();
+	boolean findEligiblePosition() {
+		eligiblePositions = new ArrayList<>();
+		int x = getX();
+		int y = getY();
 
 		for(int i = x + 1, j = y + 1; i < currentBoard.getRows() && j < currentBoard.getColumns(); i++, j++) {
 			if(currentBoard.isNullHere(i, j)) {
@@ -59,11 +59,7 @@ class Bishop extends Piece {
 		}
 
 		if(eligiblePositions.size() == 0) return false;
-		else {
-			int randInt = (int) Math.random() * eligiblePositions.size();	//get a random int from the range of eligible positions
-			currentBoard.setPositionOnBoard(this, eligiblePositions.get(randInt));
-			return true;
-		}
+		else return true;
     
 	}
 	

@@ -1,18 +1,17 @@
+import java.util.ArrayList;
 
 abstract class Piece {
-	private boolean piecesColor;    //true = white, false = black
-	private String piecesName;    	//a letter to print
-	Position piecesPosition;        //a position of a figure
-	Board currentBoard;             //a link to the current board to play on
-		
+	private boolean color;    	//true = white, false = black
+	private String name;
+	private Position position;  //a position of a figure
+	
+	Board currentBoard;         //a link to the current board to play on
+	ArrayList<Position> eligiblePositions;
+	
 	class Position {
 		private int x, y;
 		
 		Position(int x, int y) {
-			setXY(x, y);
-		}
-		
-		void setXY(int x, int y) {
 			this.x = x;
 			this.y = y;
 		}
@@ -27,23 +26,28 @@ abstract class Piece {
 
 	Piece(Board board, int x, int y, String piecesName) {
 		currentBoard = board;
-		piecesPosition = new Position(x, y);
-		board.setPositionOnBoard(this, piecesPosition);	//set position on the board
+		board.setPiecesPositionOnBoard(this, new Position(x, y));	//set position on the board
 		
 		if(y <= 2) {
-			piecesColor = true; //set the color of the piece. true = white
-			this.piecesName = piecesName; //set the letter. black pieces go with upper case letters
+			color = true; //set the color of the piece. true = white
+			this.name = piecesName; //set the letter. black pieces go with upper case letters
 		}
 		else {
-			piecesColor = false;
-			this.piecesName = piecesName.toUpperCase();
+			color = false;
+			this.name = piecesName.toUpperCase();
 		}
 	}
 	
-	boolean isWhite() {return piecesColor;}
+	int getX() {return position.x;}
+	int getY() {return position.y;}
+	void setPosition(Position position) {
+		this.position = position;
+	}
 	
-	public String toString() {return piecesName;}
+	boolean isWhite() {return color;}
 	
-	abstract boolean move();
+	public String toString() {return name;}
+	
+	abstract boolean findEligiblePosition();
 }
 	

@@ -6,8 +6,8 @@ class Board {
 	PrintWriter pw = new PrintWriter(System.out, true); //to print stuff
 	private int rows, columns;
 	//cells contain either null or a link to a piece if
-	//the cells' indexes equal to the position of the piece
-	private Piece[][] cells;
+	//the cells' indexes are equal to the position of the piece
+	private Piece[][] positionOnBoard;
 	private ArrayList<Piece> whites;  //list of white pieces
 	private ArrayList<Piece> blacks;  //list of black pieces
 	private ArrayList<Piece> setOfPieces;	//buffer list
@@ -16,7 +16,7 @@ class Board {
 		this.columns = columns;
 		this.rows = rows;
 
-		cells = new Piece[columns][rows];
+		positionOnBoard = new Piece[columns][rows];
 		
 		whites = new ArrayList<>();
 		for(int i = 0; i < 8; i++) {	//add 8 pawns to the list of pieces
@@ -49,7 +49,7 @@ class Board {
 	int getColumns() {return columns;}
 
 	//choosing a piece to make a move
-	void pieceSelectionAndMove(int turn) throws Exception {
+	void selectPieceToMove(int turn) throws Exception {
 		if(turn % 2 == 0) setOfPieces = blacks;
 		else setOfPieces = whites;
 		
@@ -57,8 +57,9 @@ class Board {
 		//random piece makes a move
 		for(int i = 0; i < setOfPieces.size(); i++) {   //each piece has one try to make an eligible move
 			randInt = (int) (Math.random() * (setOfPieces.size() - i)); //get a random number 
-			pw.print(setOfPieces.get(randInt) + " " + setOfPieces.get(randInt).piecesPosition);
-			if(setOfPieces.get(randInt).move()) {
+			pw.print(setOfPieces.get(randInt) + " " + setOfPieces.get(randInt).position);
+			if(setOfPieces.get(randInt).findEligiblePosition()) {
+				moveToRandomEligiblePosition(setOfPieces.get(randInt));
 				return;	//random piece makes a move. if a move was successful go to next turn
 			}
 			else {                                        	//if move didn't succeed
@@ -70,27 +71,32 @@ class Board {
 		throw new Exception("No piece can make a move.\n"); //is there wasn't any successful moves
 	}
 	
-	void setPositionOnBoard(Piece piece, Piece.Position position) { //setting a new position of a piece
-		int x = position.getX();
-		int y = position.getY();
+	void moveToRandomEligiblePosition(Piece piece) { //setting a new position of a piece
+		int randInt = (int) (Math.random() * piece.eligiblePositions.size());	//get a random int from the range of eligible positions
+		int x = piece.eligiblePositions.get(randInt).getX();
+		int y = piece.eligiblePositions.get(randInt).getY();
 		
-		if(cells[x][y] != null) {
-			if(piece.isWhite()) blacks.remove(cells[x][y]); //kill a piece of different color on a new position
-			else whites.remove(cells[x][y]);
+		if(positionOnBoard[x][y] != null) {
+			if(piece.isWhite()) blacks.remove(positionOnBoard[x][y]); //kill a piece of different color on a new position
+			else whites.remove(positionOnBoard[x][y]);
 		}
-		cells[piece.piecesPosition.getX()][piece.piecesPosition.getX()] = null;  //erase the current position of a piece
-		piece.piecesPosition.setXY(x, y);	//set a new coordinates
-		cells[x][y] = piece; 	//move a piece to a new position
-		pw.println(" - " + piece.piecesPosition);
+		positionOnBoard[piece.getX()][piece.getX()] = null;	//erase current position on board
+		setPiecesPositionOnBoard(piece, new Piece.Position(x, y));
+		pw.println(" - " + piece.position);
+	}
+	
+	void setPiecesPositionOnBoard(Piece piece, Piece.Position position) {
+		piece.setPosition(position);							//set a new position of a piece
+		positionOnBoard[piece.getX()][piece.getY()] = piece;	//put the piece on the board at the same coordinates
 	}
 	
 	boolean isNullHere(int x, int y) {
-		if(cells[x][y] == null) return true;
+		if(positionOnBoard[x][y] == null) return true;
 		else return false;
 	}
 	
 	boolean isEnemyHere(Piece piece, int x, int y) {	
-		if(piece.isWhite() ^ cells[x][y].isWhite()) {
+		if(piece.isWhite() ^ positionOnBoard[x][y].isWhite()) {
 			return true;
 		}
 		else return false;
@@ -105,8 +111,8 @@ class Board {
 			pw.print((i + 1) + " "); // row's number
 			for(int j = 0; j < columns; j++) {
 				pw.print("[");
-				if(cells[j][i] == null) pw.print(" "); //if board's cell isnt empty, print piece's letter
-				else pw.print(cells[j][i]);
+				if(positionOnBoard[j][i] == null) pw.print(" "); //if board's cell isnt empty, print piece's letter
+				else pw.print(positionOnBoard[j][i]);
 				pw.print("]");
 			}
 			pw.println();
