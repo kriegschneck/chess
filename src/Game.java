@@ -13,7 +13,7 @@ class Game {
 	    	//board.printBoard(turnNumber++);
 		    board.pw.print("\nTurn " + ++turnNumber + "\n");  
 		    try {
-		    	board.selectPieceToMove(turnNumber);
+		    	board.selectPieceAndMove(turnNumber);
 		    } catch (Exception e) {
 		    	board.pw.println(e);
 		    	board.printBoard(turnNumber);

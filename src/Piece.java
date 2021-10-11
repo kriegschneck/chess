@@ -4,9 +4,8 @@ abstract class Piece {
 	private boolean color;    	//true = white, false = black
 	private String name;
 	private Position position;  //a position of a figure
-	
+	private ArrayList<Position> eligiblePositions;
 	Board currentBoard;         //a link to the current board to play on
-	ArrayList<Position> eligiblePositions;
 	
 	class Position {
 		private int x, y;
@@ -24,17 +23,18 @@ abstract class Piece {
 		}
 	}
 
-	Piece(Board board, int x, int y, String piecesName) {
+	Piece(Board board, int x, int y, String name) {
 		currentBoard = board;
 		board.setPiecesPositionOnBoard(this, new Position(x, y));	//set position on the board
+		eligiblePositions = new ArrayList<>();
 		
 		if(y <= 2) {
 			color = true; //set the color of the piece. true = white
-			this.name = piecesName; //set the letter. black pieces go with upper case letters
+			this.name = name; //set the letter. black pieces go with upper case letters
 		}
 		else {
 			color = false;
-			this.name = piecesName.toUpperCase();
+			this.name = name.toUpperCase();
 		}
 	}
 	
@@ -42,6 +42,27 @@ abstract class Piece {
 	int getY() {return position.y;}
 	void setPosition(Position position) {
 		this.position = position;
+	}
+	
+	String printPosition() {
+		return position.toString();
+	}
+	
+	void addEligiblePosition(Position position) {
+		eligiblePositions.add(position);
+	}
+	
+	Position getRandomEligiblePosition() {
+		int randInt = (int) (Math.random() * eligiblePositions.size());
+		return eligiblePositions.get(randInt);
+	}
+	
+	boolean noEligiblePositions() {
+		return eligiblePositions.isEmpty();
+	}
+	
+	void clearEligiblePosition() {
+		eligiblePositions.clear();
 	}
 	
 	boolean isWhite() {return color;}

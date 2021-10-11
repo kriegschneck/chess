@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 
 class King extends Piece {
 	King(Board board, int x, int y) {
@@ -6,9 +5,13 @@ class King extends Piece {
 	}
 
 	boolean findEligiblePosition() {
-		eligiblePositions = new ArrayList<>();
-		int x = getX();
-		int y = getY();
+		clearEligiblePosition();
+		kingCalculating(getX(), getY());
+		if(noEligiblePositions()) return false;
+		else return true;
+	}
+	
+	void kingCalculating(int x, int y) {
 		
 		for(int i = x - 1; i <= x + 1; i++) {
 			if(i < 0 || i >= currentBoard.getColumns()) continue;
@@ -16,13 +19,10 @@ class King extends Piece {
 				if(j < 0 || j >= currentBoard.getRows()) continue;
 				if(i == x && j == y) continue;
 				if(currentBoard.isNullHere(i, j) || currentBoard.isEnemyHere(this, i, j)) {
-					eligiblePositions.add(new Position(i, j));
+					addEligiblePosition(new Position(i, j));
 				}
 			}
 		}
-
-		if(eligiblePositions.size() == 0) return false;
-		else return true;
 		
 	}
 	

@@ -49,7 +49,7 @@ class Board {
 	int getColumns() {return columns;}
 
 	//choosing a piece to make a move
-	void selectPieceToMove(int turn) throws Exception {
+	void selectPieceAndMove(int turn) throws Exception {
 		if(turn % 2 == 0) setOfPieces = blacks;
 		else setOfPieces = whites;
 		
@@ -57,7 +57,7 @@ class Board {
 		//random piece makes a move
 		for(int i = 0; i < setOfPieces.size(); i++) {   //each piece has one try to make an eligible move
 			randInt = (int) (Math.random() * (setOfPieces.size() - i)); //get a random number 
-			pw.print(setOfPieces.get(randInt) + " " + setOfPieces.get(randInt).position);
+			pw.print(setOfPieces.get(randInt) + " " + setOfPieces.get(randInt).printPosition());
 			if(setOfPieces.get(randInt).findEligiblePosition()) {
 				moveToRandomEligiblePosition(setOfPieces.get(randInt));
 				return;	//random piece makes a move. if a move was successful go to next turn
@@ -72,17 +72,17 @@ class Board {
 	}
 	
 	void moveToRandomEligiblePosition(Piece piece) { //setting a new position of a piece
-		int randInt = (int) (Math.random() * piece.eligiblePositions.size());	//get a random int from the range of eligible positions
-		int x = piece.eligiblePositions.get(randInt).getX();
-		int y = piece.eligiblePositions.get(randInt).getY();
+		Piece.Position bufferPosition = piece.getRandomEligiblePosition();
+		int x = bufferPosition.getX();
+		int y = bufferPosition.getY();
 		
-		if(positionOnBoard[x][y] != null) {
+		if(!isNullHere(x, y)) {
 			if(piece.isWhite()) blacks.remove(positionOnBoard[x][y]); //kill a piece of different color on a new position
 			else whites.remove(positionOnBoard[x][y]);
 		}
 		positionOnBoard[piece.getX()][piece.getX()] = null;	//erase current position on board
-		setPiecesPositionOnBoard(piece, new Piece.Position(x, y));
-		pw.println(" - " + piece.position);
+		setPiecesPositionOnBoard(piece, bufferPosition);
+		pw.println(" - " + piece.printPosition());
 	}
 	
 	void setPiecesPositionOnBoard(Piece piece, Piece.Position position) {
