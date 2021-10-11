@@ -90,7 +90,7 @@ class Board {
 			if(piece.isWhite()) blacks.remove(positionOnBoard[x][y]); //kill a piece of different color on a new position
 			else whites.remove(positionOnBoard[x][y]);
 		}
-		positionOnBoard[piece.getX()][piece.getX()] = null;	//erase current position on board
+		positionOnBoard[piece.getX()][piece.getY()] = null;	//erase current position on board
 		setPiecesPositionOnBoard(piece, bufferPosition);
 		pw.println(" - " + piece.printPosition());
 	}
