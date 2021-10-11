@@ -1,14 +1,13 @@
 
 class Knight extends Piece {
+	
 	Knight(Board board, int x, int y) {
 		super(board, x, y, "h");
 	}
 
-	boolean findEligiblePosition() {
-		clearEligiblePosition();
+	public void run() {
+		clearEligiblePositions();
 		knightCalculating(getX(), getY());
-		if(noEligiblePositions()) return false;
-		else return true;
 	}
 	
 	void knightCalculating(int x, int y) {

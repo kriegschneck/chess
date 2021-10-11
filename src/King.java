@@ -1,14 +1,13 @@
 
 class King extends Piece {
+	
 	King(Board board, int x, int y) {
 		super(board, x, y, "k");
 	}
 
-	boolean findEligiblePosition() {
-		clearEligiblePosition();
+	public void run() {
+		clearEligiblePositions();
 		kingCalculating(getX(), getY());
-		if(noEligiblePositions()) return false;
-		else return true;
 	}
 	
 	void kingCalculating(int x, int y) {

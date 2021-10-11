@@ -3,12 +3,10 @@ class Rook extends Queen {
 	Rook(Board board, int x, int y) {
 		super(board, x, y, "r");
 	}
-
-	boolean findEligiblePosition() {
-		clearEligiblePosition();
+	
+	public void run() {
+		clearEligiblePositions();
 		rookCalculating(getX(), getY());
-		if(noEligiblePositions()) return false;
-		else return true;
 	}
 	
 }

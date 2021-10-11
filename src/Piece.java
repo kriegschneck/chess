@@ -1,11 +1,13 @@
 import java.util.ArrayList;
 
-abstract class Piece {
+abstract class Piece implements Runnable {
+	
 	private boolean color;    	//true = white, false = black
 	private String name;
 	private Position position;  //a position of a figure
 	private ArrayList<Position> eligiblePositions;
 	Board currentBoard;         //a link to the current board to play on
+	Thread thread;
 	
 	class Position {
 		private int x, y;
@@ -61,7 +63,7 @@ abstract class Piece {
 		return eligiblePositions.isEmpty();
 	}
 	
-	void clearEligiblePosition() {
+	void clearEligiblePositions() {
 		eligiblePositions.clear();
 	}
 	
@@ -69,6 +71,12 @@ abstract class Piece {
 	
 	public String toString() {return name;}
 	
-	abstract boolean findEligiblePosition();
+	boolean findEligiblePosition() {
+		thread = new Thread(this);
+		thread.start();
+		if(noEligiblePositions()) return false;
+		else return true;
+	}
+	
 }
 	

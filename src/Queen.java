@@ -1,5 +1,6 @@
 
 class Queen extends Piece {
+	
 	Queen(Board board, int x, int y) {
 		super(board, x, y, "q");
 	}
@@ -7,13 +8,11 @@ class Queen extends Piece {
 	Queen(Board board, int x, int y, String name) {
 		super(board, x, y, name);
 	}
-
-	boolean findEligiblePosition() {
-		clearEligiblePosition();
+	
+	public void run() {
+		clearEligiblePositions();
 		queenCalculating(getX(), getY());
-		if(noEligiblePositions()) return false;
-		else return true;
-	}	
+	}
 
 	void queenCalculating(int x, int y) {
 		rookCalculating(x, y);

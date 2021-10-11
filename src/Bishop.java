@@ -1,14 +1,13 @@
 
 class Bishop extends Queen {
+	
 	Bishop(Board board, int x, int y) {
 		super(board, x, y, "b");
 	}
-
-	boolean findEligiblePosition() {
-		clearEligiblePosition();
+	
+	public void run() {
+		clearEligiblePositions();
 		bishopCalculating(getX(), getY());
-		if(noEligiblePositions()) return false;
-		else return true;
 	}
 	
 }

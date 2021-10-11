@@ -4,12 +4,10 @@ class Pawn extends Piece {
 	Pawn(Board board, int x, int y) {
 		super(board, x, y, "p");
 	}
-
-	boolean findEligiblePosition() {
-		clearEligiblePosition();
+	
+	public void run() {
+		clearEligiblePositions();
 		pawnCalculating(getX(), getY());
-		if(noEligiblePositions()) return false;
-		else return true;
 	}
 	
 	void pawnCalculating (int x, int y) {

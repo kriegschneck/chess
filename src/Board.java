@@ -1,8 +1,10 @@
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 class Board {
+	
 	PrintWriter pw = new PrintWriter(System.out, true); //to print stuff
 	private int rows, columns;
 	//cells contain either null or a link to a piece if
@@ -49,22 +51,30 @@ class Board {
 	int getColumns() {return columns;}
 
 	//choosing a piece to make a move
-	void selectPieceAndMove(int turn) throws Exception {
-		if(turn % 2 == 0) setOfPieces = blacks;
+	void selectPieceAndMove(int turnNumber) throws Exception {
+		if(turnNumber % 2 == 0) setOfPieces = blacks;
 		else setOfPieces = whites;
 		
-		int randInt;
+		Iterator<Piece> iterator = setOfPieces.iterator();
+		while(iterator.hasNext()) iterator.next().findEligiblePosition();	//calculate all the pieces in multiple threads
+		while(iterator.hasNext()) iterator.next().thread.join();			//waiting threads to finish
+		
 		//random piece makes a move
-		for(int i = 0; i < setOfPieces.size(); i++) {   //each piece has one try to make an eligible move
-			randInt = (int) (Math.random() * (setOfPieces.size() - i)); //get a random number 
+		int randInt;
+		ArrayList<Integer> excludedNumbers = new ArrayList<>();
+		for(int i = 0; i < setOfPieces.size(); i++) {	//amount of tries to make a move equals to amount of pieces in the set
+			do {
+				randInt = (int) (Math.random() * (setOfPieces.size())); //get a random number excluding ones that have no eligible moves
+			} while(/*!excludedNumbers.isEmpty() && */excludedNumbers.contains(randInt));
+			 
 			pw.print(setOfPieces.get(randInt) + " " + setOfPieces.get(randInt).printPosition());
-			if(setOfPieces.get(randInt).findEligiblePosition()) {
+			
+			if(!setOfPieces.get(randInt).noEligiblePositions()) {
 				moveToRandomEligiblePosition(setOfPieces.get(randInt));
 				return;	//random piece makes a move. if a move was successful go to next turn
 			}
 			else {                                        	//if move didn't succeed
-				setOfPieces.add(setOfPieces.get(randInt));  //set the piece that couldn't move at the last position
-				setOfPieces.remove(randInt);                //exclude this piece from the next random selection
+				excludedNumbers.add(randInt);
 				pw.println(" - couldn't make a move");
 			}
 		}
