@@ -225,6 +225,36 @@ abstract class Piece implements Runnable {
 		else return false;	//if this position is occupied by a piece of the same color 
 	}
 
+	void kingCalculating(int x, int y) {
+		
+		for(int i = x - 1; i <= x + 1; i++) {
+			if(i < 0 || i >= currentBoard.getColumns()) continue;
+			for(int j = y - 1; j <= y + 1; j++) {
+				if(j < 0 || j >= currentBoard.getRows()) continue;
+				if(i == x && j == y) continue;
+				
+				if(currentBoard.isNullHere(i, j) || currentBoard.isEnemyHere(this, i, j)) {	//check if another king is nearby
+					
+					for(int ii = i - 1; ii <= i + 1; ii++) {
+						if(ii == i) continue;
+						for(int jj = j - 1; jj <= j + 1; jj++) {
+							if(jj == j) continue;
+							
+							
+						}
+					}
+
+					addEligiblePosition(new Position(i, j));
+				}
+			}
+		}
+		
+	}
+	
+	
+	
+	
+	
 }
 
 	

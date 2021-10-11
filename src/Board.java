@@ -14,6 +14,9 @@ class Board {
 	private ArrayList<Piece> blacks;  //list of black pieces
 	private ArrayList<Piece> setOfPieces;	//buffer list
 
+	private Piece whiteKing;
+	private Piece blackKing;
+	
 	Board(int columns, int rows) {
 		this.columns = columns;
 		this.rows = rows;
@@ -31,7 +34,8 @@ class Board {
 		whites.add(new Bishop(this, Piece.Color.WHITE, 2, 0));
 		whites.add(new Bishop(this, Piece.Color.WHITE, 5, 0));
 		whites.add(new Queen(this, Piece.Color.WHITE, 3, 0));
-		whites.add(new King(this, Piece.Color.WHITE, 4, 0));
+		whiteKing = new King(this, Piece.Color.WHITE, 4, 0);
+		whites.add(whiteKing);
 		
 		blacks  = new ArrayList<>();
 		for(int i = 0; i < 8; i++) {	//add 8 pawns to the list of pieces
@@ -44,7 +48,8 @@ class Board {
     	blacks.add(new Bishop(this, Piece.Color.BLACK, 2, rows - 1));
     	blacks.add(new Bishop(this, Piece.Color.BLACK, 5, rows - 1));
     	blacks.add(new Queen(this, Piece.Color.BLACK, 3, rows - 1));
-    	blacks.add(new King(this, Piece.Color.BLACK, 4, rows - 1));
+    	blackKing = new King(this, Piece.Color.BLACK, 4, rows - 1);
+    	blacks.add(blackKing);
 	}
 
 	int getRows() {return rows;}
@@ -112,7 +117,17 @@ class Board {
 		else return false;
 	}
 	
-	//printing the board with the pieces
+	
+	void distanceBetweenKing() {
+		whiteKing.getX();
+		whiteKing.getY();
+		
+		blackKing.getX();
+		blackKing.getY();
+	}
+	
+	
+	
 	void printBoard(int turn) {
 		//pw.print("\033[H\033[2J"); //clear terminal
 		//pw.flush();
