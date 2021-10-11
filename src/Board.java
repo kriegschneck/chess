@@ -23,7 +23,7 @@ class Board {
 		whites = new ArrayList<>();
 		for(int i = 0; i < 8; i++) {	//add 8 pawns to the list of pieces
 		    whites.add(new Pawn(this, i, 1));
-			}
+		}
 		whites.add(new Rook(this, 0, 0));
 		whites.add(new Rook(this, 7, 0));
 		whites.add(new Knight(this, 1, 0));
@@ -65,12 +65,13 @@ class Board {
 		for(int i = 0; i < setOfPieces.size(); i++) {	//amount of tries to make a move equals to amount of pieces in the set
 			do {
 				randInt = (int) (Math.random() * (setOfPieces.size())); //get a random number excluding ones that have no eligible moves
-			} while(/*!excludedNumbers.isEmpty() && */excludedNumbers.contains(randInt));
+			} while(excludedNumbers.contains(randInt));
 			 
 			pw.print(setOfPieces.get(randInt) + " " + setOfPieces.get(randInt).printPosition());
 			
 			if(!setOfPieces.get(randInt).noEligiblePositions()) {
 				moveToRandomEligiblePosition(setOfPieces.get(randInt));
+				pw.println(" - " + setOfPieces.get(randInt).printPosition());
 				return;	//random piece makes a move. if a move was successful go to next turn
 			}
 			else {                                        	//if move didn't succeed
@@ -92,7 +93,6 @@ class Board {
 		}
 		positionOnBoard[piece.getX()][piece.getY()] = null;	//erase current position on board
 		setPiecesPositionOnBoard(piece, bufferPosition);
-		pw.println(" - " + piece.printPosition());
 	}
 	
 	void setPiecesPositionOnBoard(Piece piece, Piece.Position position) {

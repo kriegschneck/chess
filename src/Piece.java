@@ -3,7 +3,7 @@ import java.util.ArrayList;
 abstract class Piece implements Runnable {
 	
 	private boolean color;    	//true = white, false = black
-	private String name;
+	private String name;		//black pieces go with upper case letters
 	private Position position;  //a position of a figure
 	private ArrayList<Position> eligiblePositions;
 	Board currentBoard;         //a link to the current board to play on
@@ -32,7 +32,7 @@ abstract class Piece implements Runnable {
 		
 		if(y <= 2) {
 			color = true; //set the color of the piece. true = white
-			this.name = name; //set the letter. black pieces go with upper case letters
+			this.name = name; //set the name. black pieces go with upper case letters
 		}
 		else {
 			color = false;
@@ -71,11 +71,9 @@ abstract class Piece implements Runnable {
 	
 	public String toString() {return name;}
 	
-	boolean findEligiblePosition() {
+	void findEligiblePosition() {
 		thread = new Thread(this);
 		thread.start();
-		if(noEligiblePositions()) return false;
-		else return true;
 	}
 	
 }

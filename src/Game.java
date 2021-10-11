@@ -16,7 +16,6 @@ class Game {
 		    	board.selectPieceAndMove(turnNumber);
 		    } catch (Exception e) {
 		    	board.pw.println(e);
-		    	board.printBoard(turnNumber);
 		        break;
       		}
 		
