@@ -2,12 +2,28 @@ import java.util.ArrayList;
 
 abstract class Piece implements Runnable {
 	
-	private boolean color;    	//true = white, false = black
+	private Color color;
 	private String name;		//black pieces go with upper case letters
 	private Position position;  //a position of a figure
 	private ArrayList<Position> eligiblePositions;
 	Board currentBoard;         //a link to the current board to play on
 	Thread thread;
+	
+	enum Color {
+		WHITE,
+		BLACK
+	}
+	
+	enum Direction {
+		UP,
+		DOWN,
+		LEFT,
+		RIGHT,
+		UP_LEFT,
+		UP_RIGHT,
+		DOWN_LEFT,
+		DOWN_RIGHT
+	}
 	
 	class Position {
 		private int x, y;
@@ -25,19 +41,14 @@ abstract class Piece implements Runnable {
 		}
 	}
 
-	Piece(Board board, int x, int y, String name) {
+	Piece(Board board, Color color, int x, int y, String name) {
 		currentBoard = board;
 		board.setPiecesPositionOnBoard(this, new Position(x, y));	//set position on the board
+		this.color = color;
 		eligiblePositions = new ArrayList<>();
 		
-		if(y <= 2) {
-			color = true; //set the color of the piece. true = white
-			this.name = name; //set the name. black pieces go with upper case letters
-		}
-		else {
-			color = false;
-			this.name = name.toUpperCase();
-		}
+		if(isWhite()) this.name = name;
+		else this.name = name.toUpperCase();	//set the name. black pieces go with upper case letters
 	}
 	
 	int getX() {return position.x;}
@@ -67,7 +78,7 @@ abstract class Piece implements Runnable {
 		eligiblePositions.clear();
 	}
 	
-	boolean isWhite() {return color;}
+	boolean isWhite() {return this.color.equals(Color.WHITE);}
 	
 	public String toString() {return name;}
 	
@@ -76,5 +87,144 @@ abstract class Piece implements Runnable {
 		thread.start();
 	}
 	
+	void pawnCalculating (int x, int y) {
+		
+		if (isWhite()) { //calculating eligible moves if the piece is white
+			if(y == currentBoard.getRows() - 1) return;
+			if(y == 1 && currentBoard.isNullHere(x, y + 1) && currentBoard.isNullHere(x, y + 2)) {  //advance
+				addEligiblePosition(new Position(x, y + 2));
+			}
+			if(currentBoard.isNullHere(x, y + 1)) {  //base move
+				addEligiblePosition(new Position(x, y + 1));
+			}
+			if(x > 0 && !currentBoard.isNullHere(x - 1, y + 1) && currentBoard.isEnemyHere(this, x - 1, y + 1)) {  //kill to the left
+				addEligiblePosition(new Position(x - 1, y + 1));
+			}
+			if(x < currentBoard.getColumns() - 1 && !currentBoard.isNullHere(x + 1, y + 1) && currentBoard.isEnemyHere(this, x + 1, y + 1)) {  //kill to the right
+				addEligiblePosition(new Position(x + 1, y + 1));
+			}
+		}
+		else {  //if the piece is black
+			if(y == 0) return;
+			if(y == currentBoard.getRows() - 2 && currentBoard.isNullHere(x, y - 1) && currentBoard.isNullHere(x, y - 2)) {  //advance
+				addEligiblePosition(new Position(x, y - 2));
+			}
+			if(currentBoard.isNullHere(x, y - 1)) {  //base move
+				addEligiblePosition(new Position(x, y - 1));
+			}
+			if(x > 0 && !currentBoard.isNullHere(x - 1, y - 1) && currentBoard.isEnemyHere(this, x - 1, y - 1)) {  //kill to the left
+				addEligiblePosition(new Position(x - 1, y - 1));
+			}
+			if(x < currentBoard.getColumns() - 1 && !currentBoard.isNullHere(x + 1, y - 1) && currentBoard.isEnemyHere(this, x + 1, y - 1)) {  //kill to the right
+				addEligiblePosition(new Position(x + 1, y - 1));
+			}
+		}
+		
+	}
+
+	void knightCalculating(int x, int y) {
+		
+		if(x < currentBoard.getColumns() - 1 && y > 1) {
+			CheckPosition(x + 1, y - 2);
+		}
+		
+		if(x < currentBoard.getColumns() - 1 && y < currentBoard.getRows() - 2) {
+			CheckPosition(x + 1, y + 2);
+		}
+		
+		if(x > 0 && y > 1) {
+			CheckPosition(x - 1, y - 2);
+		}
+		
+		if(x > 0 && y < currentBoard.getRows() - 2) {
+			CheckPosition(x - 1, y + 2);
+		}
+		
+		if(x < currentBoard.getColumns() - 2 && y > 0) {
+			CheckPosition(x + 2, y - 1);
+		}
+		
+		if(x < currentBoard.getColumns() - 2 && y < currentBoard.getRows() - 1) {
+			CheckPosition(x + 2, y + 1);
+		}
+		
+		if(x > 1 && y > 0) {
+			CheckPosition(x - 2,  y - 1);
+		}
+		
+		if(x > 1 && y < currentBoard.getRows() - 1) {
+			CheckPosition(x - 2, y + 1);
+		}
+		
+	}
+
+	void lineCalculating(int x, int y, Direction direction) {
+		
+		switch(direction) {
+			
+		case UP:
+			for(int i = x + 1; i < currentBoard.getColumns(); i++) {
+				if(!CheckPosition(i, y)) break;
+		    }
+			break;
+		
+		case DOWN:
+			for(int i = x - 1; i >= 0; i--) {
+		    	if(!CheckPosition(i, y)) break;
+			}
+			break;
+			
+		case LEFT:
+			for(int i = y - 1; i >= 0; i--) {
+		    	if(!CheckPosition(x, i)) break;
+			}
+			break;	
+				
+		case RIGHT:
+			for(int i = y + 1; i < currentBoard.getRows(); i++) {
+	    		if(!CheckPosition(x, i)) break;
+			}
+			break;
+		
+		case UP_LEFT:
+			for(int i = x - 1, j = y + 1; i >= 0 && j < currentBoard.getColumns(); i--, j++) {
+				if(!CheckPosition(i, j)) break;
+			}
+			break;
+							
+		case UP_RIGHT:
+			for(int i = x + 1, j = y + 1; i < currentBoard.getRows() && j < currentBoard.getColumns(); i++, j++) {
+				if(!CheckPosition(i, j)) break;
+			}
+			break;
+	
+		case DOWN_LEFT:
+			for(int i = x - 1, j = y - 1; i >= 0 && j >= 0; i--, j--) {
+				if(!CheckPosition(i, j)) break;
+			}
+			break;
+			
+		case DOWN_RIGHT:
+			for(int i = x + 1, j = y - 1; i < currentBoard.getRows() && j >= 0; i++, j--) {
+				if(!CheckPosition(i, j)) break;
+			}
+			break;
+		}
+	
+	}
+	
+	boolean CheckPosition(int x, int y) {	//continue checking if true
+		if(currentBoard.isNullHere(x, y)) {
+			addEligiblePosition(new Position(x, y));
+			return true;
+		}
+		else if(currentBoard.isEnemyHere(this, x, y)) {
+			addEligiblePosition(new Position(x, y));
+			return false;
+		}
+		else return false;	//if this position is occupied by a piece of the same color 
+	}
+
 }
+
 	

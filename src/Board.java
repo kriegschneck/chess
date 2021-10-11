@@ -22,29 +22,29 @@ class Board {
 		
 		whites = new ArrayList<>();
 		for(int i = 0; i < 8; i++) {	//add 8 pawns to the list of pieces
-		    whites.add(new Pawn(this, i, 1));
+		    whites.add(new Pawn(this, Piece.Color.WHITE, i, 1));
 		}
-		whites.add(new Rook(this, 0, 0));
-		whites.add(new Rook(this, 7, 0));
-		whites.add(new Knight(this, 1, 0));
-		whites.add(new Knight(this, 6, 0));
-		whites.add(new Bishop(this, 2, 0));
-		whites.add(new Bishop(this, 5, 0));
-		whites.add(new Queen(this, 3, 0));
-		whites.add(new King(this, 4, 0));
+		whites.add(new Rook(this, Piece.Color.WHITE, 0, 0));
+		whites.add(new Rook(this, Piece.Color.WHITE, 7, 0));
+		whites.add(new Knight(this, Piece.Color.WHITE, 1, 0));
+		whites.add(new Knight(this, Piece.Color.WHITE, 6, 0));
+		whites.add(new Bishop(this, Piece.Color.WHITE, 2, 0));
+		whites.add(new Bishop(this, Piece.Color.WHITE, 5, 0));
+		whites.add(new Queen(this, Piece.Color.WHITE, 3, 0));
+		whites.add(new King(this, Piece.Color.WHITE, 4, 0));
 		
 		blacks  = new ArrayList<>();
 		for(int i = 0; i < 8; i++) {	//add 8 pawns to the list of pieces
-    		blacks.add(new Pawn(this, i, rows - 2));
+    		blacks.add(new Pawn(this, Piece.Color.BLACK, i, rows - 2));
     	}
-    	blacks.add(new Rook(this, 0, rows - 1));
-    	blacks.add(new Rook(this, 7, rows - 1));
-    	blacks.add(new Knight(this, 1, rows - 1));
-    	blacks.add(new Knight(this, 6, rows - 1));
-    	blacks.add(new Bishop(this, 2, rows - 1));
-    	blacks.add(new Bishop(this, 5, rows - 1));
-    	blacks.add(new Queen(this, 3, rows - 1));
-    	blacks.add(new King(this, 4, rows - 1));
+    	blacks.add(new Rook(this, Piece.Color.BLACK, 0, rows - 1));
+    	blacks.add(new Rook(this, Piece.Color.BLACK, 7, rows - 1));
+    	blacks.add(new Knight(this, Piece.Color.BLACK, 1, rows - 1));
+    	blacks.add(new Knight(this, Piece.Color.BLACK, 6, rows - 1));
+    	blacks.add(new Bishop(this, Piece.Color.BLACK, 2, rows - 1));
+    	blacks.add(new Bishop(this, Piece.Color.BLACK, 5, rows - 1));
+    	blacks.add(new Queen(this, Piece.Color.BLACK, 3, rows - 1));
+    	blacks.add(new King(this, Piece.Color.BLACK, 4, rows - 1));
 	}
 
 	int getRows() {return rows;}
@@ -79,7 +79,7 @@ class Board {
 				pw.println(" - couldn't make a move");
 			}
 		}
-		throw new Exception("No piece can make a move.\n"); //is there wasn't any successful moves
+		throw new Exception("No piece can make a move.\n"); //if there wasn't any successful moves
 	}
 	
 	void moveToRandomEligiblePosition(Piece piece) { //setting a new position of a piece

@@ -1,13 +1,16 @@
 
-class Bishop extends Queen {
+class Bishop extends Piece {
 	
-	Bishop(Board board, int x, int y) {
-		super(board, x, y, "b");
+	Bishop(Board board, Color color, int x, int y) {
+		super(board, color, x, y, "b");
 	}
 	
 	public void run() {
 		clearEligiblePositions();
-		bishopCalculating(getX(), getY());
+		lineCalculating(getX(), getY(), Direction.UP_LEFT);
+		lineCalculating(getX(), getY(), Direction.UP_RIGHT);
+		lineCalculating(getX(), getY(), Direction.DOWN_LEFT);
+		lineCalculating(getX(), getY(), Direction.DOWN_RIGHT);
 	}
 	
 }
