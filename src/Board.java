@@ -109,19 +109,23 @@ class Board {
 		int x = bufferPosition.getX();
 		int y = bufferPosition.getY();
 		
-		if (piece instanceof King && piece.onInitialPosition) {
-			if (x == 2 && y == 0) {
-				setPiecesPositionOnBoard(positionOnBoard[0][0], positionOnBoard[0][0].new Position(3, 0));
-				positionOnBoard[0][0] = null;
-			} else if (x == 6 && y == 0) {
-				setPiecesPositionOnBoard(positionOnBoard[7][0], positionOnBoard[7][0].new Position(5, 0));
-				positionOnBoard[7][0] = null;
-			} else if (x == 2 && y == 7) {
-				setPiecesPositionOnBoard(positionOnBoard[0][7], positionOnBoard[0][7].new Position(3, 7));
-				positionOnBoard[0][7] = null;
-			} else if (x == 6 && y == 0) {
-				setPiecesPositionOnBoard(positionOnBoard[7][7], positionOnBoard[7][7].new Position(5, 7));
-				positionOnBoard[7][7] = null;
+		if (piece instanceof King) {	//if the chosen move is roque
+			if (piece.isWhite()) {
+				if (x == 2 && y == 0) {
+					setPiecesPositionOnBoard(positionOnBoard[0][0], positionOnBoard[0][0].new Position(3, 0));
+					positionOnBoard[0][0] = null;
+				} else if (x == 6 && y == 0) {
+					setPiecesPositionOnBoard(positionOnBoard[7][0], positionOnBoard[7][0].new Position(5, 0));
+					positionOnBoard[7][0] = null;
+				}
+			} else {
+				if (x == 2 && y == 7) {
+					setPiecesPositionOnBoard(positionOnBoard[0][7], positionOnBoard[0][7].new Position(3, 7));
+					positionOnBoard[0][7] = null;
+				} else if (x == 6 && y == 0) {
+					setPiecesPositionOnBoard(positionOnBoard[7][7], positionOnBoard[7][7].new Position(5, 7));
+					positionOnBoard[7][7] = null;
+				}
 			}
 		}
 
