@@ -190,13 +190,13 @@ abstract class Piece implements Runnable {
 			break;
 		
 		case UP_LEFT:
-			for(int i = x - 1, j = y + 1; i >= 0 && j < currentBoard.getColumns(); i--, j++) {
+			for(int i = x - 1, j = y + 1; i >= 0 && j < currentBoard.getRows(); i--, j++) {
 				if(!CheckPosition(i, j)) break;
 			}
 			break;
 							
 		case UP_RIGHT:
-			for(int i = x + 1, j = y + 1; i < currentBoard.getRows() && j < currentBoard.getColumns(); i++, j++) {
+			for(int i = x + 1, j = y + 1; i < currentBoard.getColumns() && j < currentBoard.getRows(); i++, j++) {
 				if(!CheckPosition(i, j)) break;
 			}
 			break;
@@ -208,7 +208,7 @@ abstract class Piece implements Runnable {
 			break;
 			
 		case DOWN_RIGHT:
-			for(int i = x + 1, j = y - 1; i < currentBoard.getRows() && j >= 0; i++, j--) {
+			for(int i = x + 1, j = y - 1; i < currentBoard.getColumns() && j >= 0; i++, j--) {
 				if(!CheckPosition(i, j)) break;
 			}
 			break;
@@ -217,6 +217,7 @@ abstract class Piece implements Runnable {
 	}
 	
 	boolean CheckPosition(int x, int y) {	//continue checking if true
+		
 		if(currentBoard.isNullHere(x, y)) {
 			addEligiblePosition(new Position(x, y));
 			return true;
@@ -228,7 +229,40 @@ abstract class Piece implements Runnable {
 		else return false;	//if this position is occupied by a piece of the same color 
 	}
 
-	
+	void kingCalculating(int x, int y) {
+		
+		King anotherKing = currentBoard.linkToAnotherKing(this);
+		int anotherKingsX = anotherKing.getX();
+		int anotherKingsY = anotherKing.getY();
+		
+		if(Math.abs(y - anotherKingsY) >= 3 || Math.abs(x - anotherKingsX) >= 3) { //if another king is too far
+			for(int i = x - 1; i <= x + 1; i++) {
+				if(i < 0 || i >= currentBoard.getColumns()) continue;
+				for(int j = y - 1; j <= y + 1; j++) {
+					if(j < 0 || j >= currentBoard.getRows()) continue;
+					if(i == x && j == y) continue;
+					CheckPosition(i, j);
+				}
+			}
+		}
+		else {	//if vertical and horizontal distance between kings are equal or less than 2 
+			int dx, dy;
+			for(int i = x - 1; i <= x + 1; i++) {
+				if(i < 0 || i >= currentBoard.getColumns()) continue;
+				dx = Math.abs(i - anotherKingsX);
+				
+				for(int j = y - 1; j <= y + 1; j++) {
+					if(j < 0 || j >= currentBoard.getRows()) continue;
+					if(i == x && j == y) continue;
+					dy = Math.abs(j - anotherKingsY);
+					if(dx <= 1 && dy <= 1) continue;
+					
+					CheckPosition(i, j);
+				}
+			}
+		}
+		
+	}
 	
 	
 	

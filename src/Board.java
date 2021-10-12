@@ -59,10 +59,8 @@ class Board {
 		if(turnNumber % 2 == 0) setOfPieces = blacks;
 		else setOfPieces = whites;
 	
-		for(int i = 0; i < setOfPieces.size(); i++) {
-			setOfPieces.get(i).findEligiblePosition();
-			setOfPieces.get(i).thread.join();
-		}
+		for(int i = 0; i < setOfPieces.size(); i++) setOfPieces.get(i).findEligiblePosition();
+		for(int i = 0; i < setOfPieces.size(); i++) setOfPieces.get(i).thread.join();
 		
 		//random piece makes a move
 		int randInt;
@@ -117,7 +115,7 @@ class Board {
 		else return false;
 	}
 	
-	King linkToAnotherKing(King king) {
+	King linkToAnotherKing(Piece king) {
 		if(king.isWhite()) return blackKing;
 		else return whiteKing;
 	}
