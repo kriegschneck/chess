@@ -6,6 +6,7 @@ abstract class Piece implements Runnable {
 	private String name;		//black pieces go with upper case letters
 	private Position position;  //a position of a figure
 	private ArrayList<Position> eligiblePositions;
+	private boolean onInitialPosition;
 	Board currentBoard;         //a link to the current board to play on
 	Thread thread;
 	
@@ -46,6 +47,7 @@ abstract class Piece implements Runnable {
 		board.setPiecesPositionOnBoard(this, new Position(x, y));	//set position on the board
 		this.color = color;
 		eligiblePositions = new ArrayList<>();
+		onInitialPosition = true;
 		
 		if(isWhite()) this.name = name;
 		else this.name = name.toUpperCase();	//set the name. black pieces go with upper case letters
@@ -55,6 +57,7 @@ abstract class Piece implements Runnable {
 	int getY() {return position.y;}
 	void setPosition(Position position) {
 		this.position = position;
+		if(onInitialPosition) onInitialPosition = false;
 	}
 	
 	String printPosition() {
@@ -91,7 +94,7 @@ abstract class Piece implements Runnable {
 		
 		if (isWhite()) { //calculating eligible moves if the piece is white
 			if(y == currentBoard.getRows() - 1) return;
-			if(y == 1 && currentBoard.isNullHere(x, y + 1) && currentBoard.isNullHere(x, y + 2)) {  //advance
+			if(onInitialPosition && currentBoard.isNullHere(x, y + 1) && currentBoard.isNullHere(x, y + 2)) {  //advance
 				addEligiblePosition(new Position(x, y + 2));
 			}
 			if(currentBoard.isNullHere(x, y + 1)) {  //base move
@@ -106,7 +109,7 @@ abstract class Piece implements Runnable {
 		}
 		else {  //if the piece is black
 			if(y == 0) return;
-			if(y == currentBoard.getRows() - 2 && currentBoard.isNullHere(x, y - 1) && currentBoard.isNullHere(x, y - 2)) {  //advance
+			if(onInitialPosition && currentBoard.isNullHere(x, y - 1) && currentBoard.isNullHere(x, y - 2)) {  //advance
 				addEligiblePosition(new Position(x, y - 2));
 			}
 			if(currentBoard.isNullHere(x, y - 1)) {  //base move
@@ -225,31 +228,7 @@ abstract class Piece implements Runnable {
 		else return false;	//if this position is occupied by a piece of the same color 
 	}
 
-	void kingCalculating(int x, int y) {
-		
-		for(int i = x - 1; i <= x + 1; i++) {
-			if(i < 0 || i >= currentBoard.getColumns()) continue;
-			for(int j = y - 1; j <= y + 1; j++) {
-				if(j < 0 || j >= currentBoard.getRows()) continue;
-				if(i == x && j == y) continue;
-				
-				if(currentBoard.isNullHere(i, j) || currentBoard.isEnemyHere(this, i, j)) {	//check if another king is nearby
-					
-					for(int ii = i - 1; ii <= i + 1; ii++) {
-						if(ii == i) continue;
-						for(int jj = j - 1; jj <= j + 1; jj++) {
-							if(jj == j) continue;
-							
-							
-						}
-					}
-
-					addEligiblePosition(new Position(i, j));
-				}
-			}
-		}
-		
-	}
+	
 	
 	
 	

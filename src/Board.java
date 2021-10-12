@@ -1,7 +1,6 @@
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 class Board {
 	
@@ -14,8 +13,8 @@ class Board {
 	private ArrayList<Piece> blacks;  //list of black pieces
 	private ArrayList<Piece> setOfPieces;	//buffer list
 
-	private Piece whiteKing;
-	private Piece blackKing;
+	private King whiteKing;
+	private King blackKing;
 	
 	Board(int columns, int rows) {
 		this.columns = columns;
@@ -59,19 +58,20 @@ class Board {
 	void selectPieceAndMove(int turnNumber) throws Exception {
 		if(turnNumber % 2 == 0) setOfPieces = blacks;
 		else setOfPieces = whites;
-		
-		Iterator<Piece> iterator = setOfPieces.iterator();
-		while(iterator.hasNext()) iterator.next().findEligiblePosition();	//calculate all the pieces in multiple threads
-		while(iterator.hasNext()) iterator.next().thread.join();			//waiting threads to finish
+	
+		for(int i = 0; i < setOfPieces.size(); i++) {
+			setOfPieces.get(i).findEligiblePosition();
+			setOfPieces.get(i).thread.join();
+		}
 		
 		//random piece makes a move
 		int randInt;
 		ArrayList<Integer> excludedNumbers = new ArrayList<>();
+		
 		for(int i = 0; i < setOfPieces.size(); i++) {	//amount of tries to make a move equals to amount of pieces in the set
 			do {
 				randInt = (int) (Math.random() * (setOfPieces.size())); //get a random number excluding ones that have no eligible moves
 			} while(excludedNumbers.contains(randInt));
-			 
 			pw.print(setOfPieces.get(randInt) + " " + setOfPieces.get(randInt).printPosition());
 			
 			if(!setOfPieces.get(randInt).noEligiblePositions()) {
@@ -117,16 +117,10 @@ class Board {
 		else return false;
 	}
 	
-	
-	void distanceBetweenKing() {
-		whiteKing.getX();
-		whiteKing.getY();
-		
-		blackKing.getX();
-		blackKing.getY();
+	King linkToAnotherKing(King king) {
+		if(king.isWhite()) return blackKing;
+		else return whiteKing;
 	}
-	
-	
 	
 	void printBoard(int turn) {
 		//pw.print("\033[H\033[2J"); //clear terminal

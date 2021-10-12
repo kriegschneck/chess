@@ -15,12 +15,13 @@ class Game {
 		    try {
 		    	board.selectPieceAndMove(turnNumber);
 		    } catch (Exception e) {
-		    	board.pw.println(e);
+		    	board.pw.println("\n" + e);
+		    	board.printBoard(turnNumber);
 		        break;
       		}
 		
 		    try {
-		    	Thread.sleep(100); //time between turns
+		    	Thread.sleep(1); //time between turns
 	      	} catch (Exception e) {
 	      		board.pw.println("The game was interrupted");
 		        break;
