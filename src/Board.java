@@ -25,7 +25,8 @@ class Board {
 	private Piece[][] positionOnBoard;		//cells contain either null or a link to a piece
 	private ArrayList<Piece> whites;  		//list of white pieces
 	private ArrayList<Piece> blacks;  		//list of black pieces
-	private ArrayList<Piece> setOfPieces;	//list of pieces used as a buffer
+	private ArrayList<Piece> pieces;		//list of pieces used as a buffer
+	private ArrayList<Piece> enemyPieces;
 	private King whiteKing;
 	private King blackKing;
 	
@@ -67,29 +68,31 @@ class Board {
 		ArrayList<Integer> excludedNumbers = new ArrayList<>();
 		
 		if (turnNumber % 2 == 0) {
-			setOfPieces = blacks;
+			pieces = blacks;
+			enemyPieces = whites;
 		} else {
-			setOfPieces = whites;
+			pieces = whites;
+			enemyPieces = blacks;
 		}
 	
-		for (int i = 0; i < setOfPieces.size(); i++) {
-			setOfPieces.get(i).calculateEligiblePosition();
+		for (int i = 0; i < pieces.size(); i++) {
+			pieces.get(i).calculateEligiblePosition();
 		}
-		for (int i = 0; i < setOfPieces.size(); i++) {
-			setOfPieces.get(i).thread.join();
+		for (int i = 0; i < pieces.size(); i++) {
+			pieces.get(i).thread.join();
 		}
 		
 		//choosing a piece to make a move
-		for (int i = 0; i < setOfPieces.size(); i++) {					//amount of tries to make a move equals to amount of pieces in the set
+		for (int i = 0; i < pieces.size(); i++) {					//amount of tries to make a move equals to amount of pieces in the set
 			do {
-				randInt = (int) (Math.random() * (setOfPieces.size())); //get a random number excluding ones that have no eligible moves
+				randInt = (int) (Math.random() * (pieces.size())); //get a random number excluding ones that have no eligible moves
 			} while(excludedNumbers.contains(randInt));
 			
-			System.out.print(setOfPieces.get(randInt) + " " + setOfPieces.get(randInt).printPosition());
+			System.out.print(pieces.get(randInt) + " " + pieces.get(randInt).printPosition());
 			
-			if (!setOfPieces.get(randInt).noEligiblePositions()) {		//if the chosen piece has eligible moves
-				moveToRandomEligiblePosition(setOfPieces.get(randInt));	//the piece makes a move
-				System.out.println(" - " + setOfPieces.get(randInt).printPosition());	
+			if (!pieces.get(randInt).noEligiblePositions()) {		//if the chosen piece has eligible moves
+				moveToRandomEligiblePosition(pieces.get(randInt));	//the piece makes a move
+				System.out.println(" - " + pieces.get(randInt).printPosition());	
 				
 				/*if (setOfPieces.get(randInt) instanceof King) {
 					printBoard(turnNumber);
@@ -109,7 +112,7 @@ class Board {
 		int x = bufferPosition.getX();
 		int y = bufferPosition.getY();
 		
-		if (piece instanceof King) {	//if the chosen move is roque
+		if (piece instanceof King && piece.onInitialPosition) {	//if the chosen move is roque
 			if (piece.isWhite()) {
 				if (x == 2 && y == 0) {
 					setPiecesPositionOnBoard(positionOnBoard[0][0], positionOnBoard[0][0].new Position(3, 0));
@@ -129,8 +132,8 @@ class Board {
 			}
 		}
 
-		if(!isNullHere(x, y)) {
-			if(piece.isWhite()) {
+		if (!isNullHere(x, y)) {
+			if (piece.isWhite()) {
 				blacks.remove(positionOnBoard[x][y]);			//kill a piece of different color on a new position
 			} else {
 				whites.remove(positionOnBoard[x][y]);

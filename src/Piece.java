@@ -22,7 +22,7 @@ abstract class Piece implements Runnable {
 	private String name;		//black pieces go with upper case letters
 	private Position position;  //a position of a figure
 	private ArrayList<Position> eligiblePositions;
-	private boolean onInitialPosition;
+	boolean onInitialPosition;
 	
 	enum Color {
 		WHITE,
