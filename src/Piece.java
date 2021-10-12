@@ -22,11 +22,15 @@ abstract class Piece implements Runnable {
 	private String name;		//black pieces go with upper case letters
 	private Position position;  //a position of a figure
 	private ArrayList<Position> eligiblePositions;
-	private boolean onInitialPosition;
+	boolean onInitialPosition;
 	
 	enum Color {
 		WHITE,
-		BLACK
+		BLACK;
+
+		boolean isWhite() {
+			return this.equals(WHITE);
+		}
 	}
 	
 	enum Direction {
@@ -73,7 +77,7 @@ abstract class Piece implements Runnable {
 		eligiblePositions = new ArrayList<>();
 		onInitialPosition = true;
 		
-		if (isWhite()) {
+		if (color.isWhite()) {
 			this.name = name;
 		} else {
 			this.name = name.toUpperCase();	//set the name. black pieces go with upper case letters
@@ -114,20 +118,24 @@ abstract class Piece implements Runnable {
 	}
 	
 	boolean isWhite() {
-		return this.color.equals(Color.WHITE);
+		return this.color.isWhite();
 	}
 	
 	public String toString() {
 		return name;
 	}
 	
-	void findEligiblePosition() {
+	void calculateEligiblePosition() {
 		thread = new Thread(this);
 		thread.start();
 	}
 	
+	boolean findPositionAmongEligible(Position position) {
+		return eligiblePositions.contains(position);
+	}
+	
 	void pawnCalculating (int x, int y) {
-		if (isWhite()) { //calculating eligible moves if the piece is white
+		if (color.isWhite()) { //calculating eligible moves if the piece is white
 			if (y == Board.ROWS - 1) return;
 			if (onInitialPosition && currentBoard.isNullHere(x, y + 1) && currentBoard.isNullHere(x, y + 2)) {  //advance
 				eligiblePositions.add(new Position(x, y + 2));
@@ -255,34 +263,67 @@ abstract class Piece implements Runnable {
 	}
 
 	void kingCalculating(int x, int y) {
-		King anotherKing = currentBoard.getKingOfDifferentColor(this);
-		int anotherKingsX = anotherKing.getX();
-		int anotherKingsY = anotherKing.getY();
-		int dx;	//horizontal distance to another king
-		int dy;	//vertical distance to another king
-
 		for (int i = x - 1; i <= x + 1; i++) {
 			if (i < 0 || i >= Board.COLUMNS) continue;	
-			dx = Math.abs(i - anotherKingsX);
 			
 			for (int j = y - 1; j <= y + 1; j++) {
 				if (j < 0 || j >= Board.ROWS) continue;	
 				if (i == x && j == y) continue;			//if this is the initial position
-				dy = Math.abs(j - anotherKingsY);
-				if (dx <= 1 && dy <= 1) continue;		//this position is too close to another king's one
 				
-				CheckPosition(i, j);
+				if(!currentBoard.isPositionUnderAttackByAnotherColor(color, new Position(i, j))) {
+					CheckPosition(i, j);
+				}
 			}
+		}
+		//System.out.println("king's eligible positions: " + eligiblePositions);
+		
+		//roque
+		if (onInitialPosition) {
+			if (color.isWhite()) {
+				if (!currentBoard.isNullHere(0, 0)
+						&& currentBoard.getPieceByPosition(0, 0).onInitialPosition	//rook is on the initial position
+						&& currentBoard.isNullHere(1, 0)					
+						&& currentBoard.isNullHere(2, 0) 
+						&& currentBoard.isNullHere(3, 0)
+						&& !currentBoard.isPositionUnderAttackByAnotherColor(color, position)
+						&& !currentBoard.isPositionUnderAttackByAnotherColor(color, new Position(2, 0))) {	
+					eligiblePositions.add(new Position(2, 0));
+				}
+				
+				if (!currentBoard.isNullHere(7, 0)
+						&& currentBoard.getPieceByPosition(7, 0).onInitialPosition
+						&& currentBoard.isNullHere(5, 0)					
+						&& currentBoard.isNullHere(6, 0) 
+						&& !currentBoard.isPositionUnderAttackByAnotherColor(color, position)
+						&& !currentBoard.isPositionUnderAttackByAnotherColor(color, new Position(6, 0))) {
+					eligiblePositions.add(new Position(6, 0));
+				}
+				
+			} else {
+				if (!currentBoard.isNullHere(0, 7)
+						&& currentBoard.getPieceByPosition(0, 7).onInitialPosition	//rook is on the initial position
+						&& currentBoard.isNullHere(1, 7)					
+						&& currentBoard.isNullHere(2, 7) 
+						&& currentBoard.isNullHere(3, 7)
+						&& !currentBoard.isPositionUnderAttackByAnotherColor(color, position)
+						&& !currentBoard.isPositionUnderAttackByAnotherColor(color, new Position(2, 7))) {
+					eligiblePositions.add(new Position(2, 7));
+				}
+				
+				if (!currentBoard.isNullHere(7, 7)
+						&& currentBoard.getPieceByPosition(7, 7).onInitialPosition
+						&& currentBoard.isNullHere(5, 7)					
+						&& currentBoard.isNullHere(6, 7) 
+						&& !currentBoard.isPositionUnderAttackByAnotherColor(color, position)
+						&& !currentBoard.isPositionUnderAttackByAnotherColor(color, new Position(3, 7))) {
+					eligiblePositions.add(new Position(6, 7));
+				}
+			}
+			
 		}
 		
 	}
-	
-	void roque() {
-		if(onInitialPosition) {
-			
-		}
-	}
-	
+
 	
 }
 

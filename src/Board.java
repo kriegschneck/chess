@@ -9,11 +9,14 @@
  */
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 class Board {
 	/*
 	 * Class board contains two lists of pieces and a two-dimensional array which contains links to pieces or null
 	 * if no pieces have position equals to indexes of the array
+	 * 
+	 * the class also contain methods to control pieces' positions
 	 */
 	
 	static final int ROWS = 8;     			//must be 8
@@ -70,7 +73,7 @@ class Board {
 		}
 	
 		for (int i = 0; i < setOfPieces.size(); i++) {
-			setOfPieces.get(i).findEligiblePosition();
+			setOfPieces.get(i).calculateEligiblePosition();
 		}
 		for (int i = 0; i < setOfPieces.size(); i++) {
 			setOfPieces.get(i).thread.join();
@@ -87,6 +90,11 @@ class Board {
 			if (!setOfPieces.get(randInt).noEligiblePositions()) {		//if the chosen piece has eligible moves
 				moveToRandomEligiblePosition(setOfPieces.get(randInt));	//the piece makes a move
 				System.out.println(" - " + setOfPieces.get(randInt).printPosition());	
+				
+				/*if (setOfPieces.get(randInt) instanceof King) {
+					printBoard(turnNumber);
+				}*/
+				
 				return;	
 			} else {                                        			//if the piece didn't have eligible moves 
 				excludedNumbers.add(randInt);							//exclude the number of the piece from the next random selection
@@ -101,6 +109,22 @@ class Board {
 		int x = bufferPosition.getX();
 		int y = bufferPosition.getY();
 		
+		if (piece instanceof King && piece.onInitialPosition) {
+			if (x == 2 && y == 0) {
+				setPiecesPositionOnBoard(positionOnBoard[0][0], positionOnBoard[0][0].new Position(3, 0));
+				positionOnBoard[0][0] = null;
+			} else if (x == 6 && y == 0) {
+				setPiecesPositionOnBoard(positionOnBoard[7][0], positionOnBoard[7][0].new Position(5, 0));
+				positionOnBoard[7][0] = null;
+			} else if (x == 2 && y == 7) {
+				setPiecesPositionOnBoard(positionOnBoard[0][7], positionOnBoard[0][7].new Position(3, 7));
+				positionOnBoard[0][7] = null;
+			} else if (x == 6 && y == 0) {
+				setPiecesPositionOnBoard(positionOnBoard[7][7], positionOnBoard[7][7].new Position(5, 7));
+				positionOnBoard[7][7] = null;
+			}
+		}
+
 		if(!isNullHere(x, y)) {
 			if(piece.isWhite()) {
 				blacks.remove(positionOnBoard[x][y]);			//kill a piece of different color on a new position
@@ -125,8 +149,25 @@ class Board {
 		return (piece.isWhite() ^ positionOnBoard[x][y].isWhite());
 	}
 	
-	King getKingOfDifferentColor(Piece piece) {
-		return (piece.isWhite() ? blackKing : whiteKing);
+	Piece getPieceByPosition(int x, int y) {
+		return positionOnBoard[x][y];
+	}
+	
+	boolean isPositionUnderAttackByAnotherColor(Piece.Color myColor, Piece.Position position) {
+		Iterator<Piece> iterator;
+		
+		if (myColor.isWhite()) {
+			iterator = blacks.iterator();
+		} else {
+			iterator = whites.iterator();
+		}
+		
+		while (iterator.hasNext()) {
+			if (iterator.next().findPositionAmongEligible(position)) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	void printBoard(int turn) {
