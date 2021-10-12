@@ -1,30 +1,38 @@
+/*
+ * Board
+ * 
+ * v0.9
+ * 
+ * 12.10.21
+ * 
+ * Sergei N
+ */
 
-import java.io.PrintWriter;
 import java.util.ArrayList;
 
 class Board {
+	/*
+	 * Class board contains two lists of pieces and a two-dimensional array which contains links to pieces or null
+	 * if no pieces have position equals to indexes of the array
+	 */
 	
-	PrintWriter pw = new PrintWriter(System.out, true); //to print stuff
-	private int rows, columns;
-	//cells contain either null or a link to a piece if
-	//the cells' indexes are equal to the position of the piece
-	private Piece[][] positionOnBoard;
-	private ArrayList<Piece> whites;  //list of white pieces
-	private ArrayList<Piece> blacks;  //list of black pieces
-	private ArrayList<Piece> setOfPieces;	//buffer list
-
+	static final int ROWS = 8;     			//must be 8
+    static final int COLUMNS = 8;  			//must be 8
+    
+	private Piece[][] positionOnBoard;		//cells contain either null or a link to a piece
+	private ArrayList<Piece> whites;  		//list of white pieces
+	private ArrayList<Piece> blacks;  		//list of black pieces
+	private ArrayList<Piece> setOfPieces;	//list of pieces used as a buffer
 	private King whiteKing;
 	private King blackKing;
 	
-	Board(int columns, int rows) {
-		this.columns = columns;
-		this.rows = rows;
-
-		positionOnBoard = new Piece[columns][rows];
-		
+	Board() {
+		positionOnBoard = new Piece[COLUMNS][ROWS];
 		whites = new ArrayList<>();
-		for(int i = 0; i < 8; i++) {	//add 8 pawns to the list of pieces
-		    whites.add(new Pawn(this, Piece.Color.WHITE, i, 1));
+		blacks  = new ArrayList<>();
+		
+		for (int i = 0; i < 8; i++) {
+			whites.add(new Pawn(this, Piece.Color.WHITE, i, 1));
 		}
 		whites.add(new Rook(this, Piece.Color.WHITE, 0, 0));
 		whites.add(new Rook(this, Piece.Color.WHITE, 7, 0));
@@ -36,53 +44,56 @@ class Board {
 		whiteKing = new King(this, Piece.Color.WHITE, 4, 0);
 		whites.add(whiteKing);
 		
-		blacks  = new ArrayList<>();
-		for(int i = 0; i < 8; i++) {	//add 8 pawns to the list of pieces
-    		blacks.add(new Pawn(this, Piece.Color.BLACK, i, rows - 2));
-    	}
-    	blacks.add(new Rook(this, Piece.Color.BLACK, 0, rows - 1));
-    	blacks.add(new Rook(this, Piece.Color.BLACK, 7, rows - 1));
-    	blacks.add(new Knight(this, Piece.Color.BLACK, 1, rows - 1));
-    	blacks.add(new Knight(this, Piece.Color.BLACK, 6, rows - 1));
-    	blacks.add(new Bishop(this, Piece.Color.BLACK, 2, rows - 1));
-    	blacks.add(new Bishop(this, Piece.Color.BLACK, 5, rows - 1));
-    	blacks.add(new Queen(this, Piece.Color.BLACK, 3, rows - 1));
-    	blackKing = new King(this, Piece.Color.BLACK, 4, rows - 1);
+		for (int i = 0; i < 8; i++) {
+			blacks.add(new Pawn(this, Piece.Color.BLACK, i, ROWS - 2));
+		}
+    	blacks.add(new Rook(this, Piece.Color.BLACK, 0, ROWS - 1));
+    	blacks.add(new Rook(this, Piece.Color.BLACK, 7, ROWS - 1));
+    	blacks.add(new Knight(this, Piece.Color.BLACK, 1, ROWS - 1));
+    	blacks.add(new Knight(this, Piece.Color.BLACK, 6, ROWS - 1));
+    	blacks.add(new Bishop(this, Piece.Color.BLACK, 2, ROWS - 1));
+    	blacks.add(new Bishop(this, Piece.Color.BLACK, 5, ROWS - 1));
+    	blacks.add(new Queen(this, Piece.Color.BLACK, 3, ROWS - 1));
+    	blackKing = new King(this, Piece.Color.BLACK, 4, ROWS - 1);
     	blacks.add(blackKing);
 	}
 
-	int getRows() {return rows;}
-	int getColumns() {return columns;}
-
 	//choosing a piece to make a move
 	void selectPieceAndMove(int turnNumber) throws Exception {
-		if(turnNumber % 2 == 0) setOfPieces = blacks;
-		else setOfPieces = whites;
-	
-		for(int i = 0; i < setOfPieces.size(); i++) setOfPieces.get(i).findEligiblePosition();
-		for(int i = 0; i < setOfPieces.size(); i++) setOfPieces.get(i).thread.join();
-		
-		//random piece makes a move
 		int randInt;
 		ArrayList<Integer> excludedNumbers = new ArrayList<>();
 		
-		for(int i = 0; i < setOfPieces.size(); i++) {	//amount of tries to make a move equals to amount of pieces in the set
+		if (turnNumber % 2 == 0) {
+			setOfPieces = blacks;
+		} else {
+			setOfPieces = whites;
+		}
+	
+		for (int i = 0; i < setOfPieces.size(); i++) {
+			setOfPieces.get(i).findEligiblePosition();
+		}
+		for (int i = 0; i < setOfPieces.size(); i++) {
+			setOfPieces.get(i).thread.join();
+		}
+		
+		//choosing a piece to make a move
+		for (int i = 0; i < setOfPieces.size(); i++) {					//amount of tries to make a move equals to amount of pieces in the set
 			do {
 				randInt = (int) (Math.random() * (setOfPieces.size())); //get a random number excluding ones that have no eligible moves
 			} while(excludedNumbers.contains(randInt));
-			pw.print(setOfPieces.get(randInt) + " " + setOfPieces.get(randInt).printPosition());
 			
-			if(!setOfPieces.get(randInt).noEligiblePositions()) {
-				moveToRandomEligiblePosition(setOfPieces.get(randInt));
-				pw.println(" - " + setOfPieces.get(randInt).printPosition());
-				return;	//random piece makes a move. if a move was successful go to next turn
-			}
-			else {                                        	//if move didn't succeed
-				excludedNumbers.add(randInt);
-				pw.println(" - couldn't make a move");
+			System.out.print(setOfPieces.get(randInt) + " " + setOfPieces.get(randInt).printPosition());
+			
+			if (!setOfPieces.get(randInt).noEligiblePositions()) {		//if the chosen piece has eligible moves
+				moveToRandomEligiblePosition(setOfPieces.get(randInt));	//the piece makes a move
+				System.out.println(" - " + setOfPieces.get(randInt).printPosition());	
+				return;	
+			} else {                                        			//if the piece didn't have eligible moves 
+				excludedNumbers.add(randInt);							//exclude the number of the piece from the next random selection
+				System.out.println(" - couldn't make a move");
 			}
 		}
-		throw new Exception("No piece can make a move.\n"); //if there wasn't any successful moves
+		throw new Exception("No piece can make a move.\n"); 			//if there wasn't any successful moves at all throw exception and end the game
 	}
 	
 	void moveToRandomEligiblePosition(Piece piece) { //setting a new position of a piece
@@ -91,10 +102,13 @@ class Board {
 		int y = bufferPosition.getY();
 		
 		if(!isNullHere(x, y)) {
-			if(piece.isWhite()) blacks.remove(positionOnBoard[x][y]); //kill a piece of different color on a new position
-			else whites.remove(positionOnBoard[x][y]);
+			if(piece.isWhite()) {
+				blacks.remove(positionOnBoard[x][y]);			//kill a piece of different color on a new position
+			} else {
+				whites.remove(positionOnBoard[x][y]);
+			}
 		}
-		positionOnBoard[piece.getX()][piece.getY()] = null;	//erase current position on board
+		positionOnBoard[piece.getX()][piece.getY()] = null;		//erase current position on board
 		setPiecesPositionOnBoard(piece, bufferPosition);
 	}
 	
@@ -104,36 +118,32 @@ class Board {
 	}
 	
 	boolean isNullHere(int x, int y) {
-		if(positionOnBoard[x][y] == null) return true;
-		else return false;
+		return (positionOnBoard[x][y] == null);
 	}
 	
 	boolean isEnemyHere(Piece piece, int x, int y) {	
-		if(piece.isWhite() ^ positionOnBoard[x][y].isWhite()) {
-			return true;
-		}
-		else return false;
+		return (piece.isWhite() ^ positionOnBoard[x][y].isWhite());
 	}
 	
-	King linkToAnotherKing(Piece king) {
-		if(king.isWhite()) return blackKing;
-		else return whiteKing;
+	King getKingOfDifferentColor(Piece piece) {
+		return (piece.isWhite() ? blackKing : whiteKing);
 	}
 	
 	void printBoard(int turn) {
-		//pw.print("\033[H\033[2J"); //clear terminal
-		//pw.flush();
-
-		for(int i = rows - 1; i >=0; i--) {
-			pw.print((i + 1) + " "); // row's number
-			for(int j = 0; j < columns; j++) {
-				pw.print("[");
-				if(positionOnBoard[j][i] == null) pw.print(" "); //if board's cell isnt empty, print piece's letter
-				else pw.print(positionOnBoard[j][i]);
-				pw.print("]");
+		for (int i = ROWS - 1; i >=0; i--) {
+			System.out.print((i + 1) + " ");
+			for (int j = 0; j < COLUMNS; j++) {
+				System.out.print("[");
+				if (positionOnBoard[j][i] == null) {
+					System.out.print(" ");
+				} else {
+					System.out.print(positionOnBoard[j][i]);
+				}
+				System.out.print("]");
 			}
-			pw.println();
+			System.out.println();
 		}
-		pw.println("   a  b  c  d  e  f  g  h\n\nTurn: " + turn); // column's letters
+		System.out.println("   a  b  c  d  e  f  g  h\n\nTurn: " + turn);
 	}
+	
 }

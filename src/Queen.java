@@ -1,5 +1,17 @@
+/*
+ * Piece
+ * 
+ * v0.9
+ * 
+ * 12.10.21
+ * 
+ * Sergei N
+ */
 
 class Queen extends Piece {
+	/*
+	 * Queen
+	 */
 	
 	Queen(Board board, Color color, int x, int y) {
 		super(board, color, x, y, "q");
