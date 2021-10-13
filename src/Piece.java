@@ -73,7 +73,7 @@ abstract class Piece implements Runnable {
 		}
 		
 		public String toString() {
-			return "[" + x + ", " + y + "]";
+			return ("[" + (char) (x + 97) + (y + 1) + "]");
 		}
 		
 	}
@@ -298,9 +298,8 @@ abstract class Piece implements Runnable {
 				}
 			}
 		}
-		//System.out.println("king's eligible positions: " + eligiblePositions);
 		
-		//roque
+		//Roque
 		if (onInitialPosition) {
 			if (color.isWhite()) {
 				if (!currentBoard.isNullHere(0, 0)

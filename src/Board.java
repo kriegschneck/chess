@@ -98,11 +98,11 @@ class Board {
 			
 			if (!pieces.get(randInt).noEligiblePositions()) {		//if the chosen piece has eligible moves
 				moveToRandomEligiblePosition(pieces.get(randInt));	//the piece makes a move
-				System.out.println(" - " + pieces.get(randInt).printPosition());	
+				System.out.println("-" + pieces.get(randInt).printPosition());	
 				return;	
 			} else {                                        			//if the piece didn't have eligible moves 
 				excludedNumbers.add(randInt);							//exclude the number of the piece from the next random selection
-				System.out.println(" - couldn't make a move");
+				System.out.println("-couldn't make a move");
 			}
 		}
 		throw new Exception("No piece can make a move.\n"); 			//if there wasn't any successful moves at all throw exception and end the game
