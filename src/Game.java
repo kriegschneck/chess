@@ -17,27 +17,23 @@ class Game {
 	static int turnNumber = 0;
 	
 	public static void main(String[] args) {
-	    Board board = new Board(); 	//creating a board
+	    Board board = new Board(); 	
 	    
 	    //playing the game
 	    while (true) {
-	    	//board.printBoard(turnNumber++);
 		    System.out.print("\nTurn " + ++turnNumber + "\n");  
 		    try {
 		    	board.selectPiece();
 		    	board.movePiece();
+		    	Thread.sleep(1);
+		    } catch (InterruptedException e) {
+		    	System.out.println("The game was interrupted");
+		        break;
 		    } catch (Exception e) {
 		    	System.out.println("\n" + e);
 		    	board.printBoard();
 		        break;
       		}
-		
-		    try {
-		    	Thread.sleep(1); //time between turns
-	      	} catch (Exception e) {
-	      		System.out.println("The game was interrupted");
-		        break;
-	      	}
 	    }
     
 	}

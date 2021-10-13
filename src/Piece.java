@@ -130,7 +130,7 @@ abstract class Piece implements Runnable {
 		return eligiblePositions.get(randInt);
 	}
 	
-	boolean noEligiblePositions() {
+	boolean hasNoEligiblePositions() {
 		return eligiblePositions.isEmpty();
 	}
 	
@@ -297,9 +297,14 @@ abstract class Piece implements Runnable {
 				if (j < 0 || j >= Board.ROWS) continue;	
 				if (i == x && j == y) continue;			//if this is the initial position
 				
-				if(!currentBoard.isPositionUnderAttack(color, new Position(i, j))) {
-					CheckPosition(i, j);
+				CheckPosition(i, j);
+				
+				if(!eligiblePositions.isEmpty()) {
+					if(!currentBoard.isPositionUnderAttack(color, new Position(i, j))) {
+						eligiblePositions.remove(eligiblePositions.size() - 1);
+					}
 				}
+				
 			}
 		}
 		

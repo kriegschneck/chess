@@ -22,7 +22,7 @@ class Board {
 	static final int ROWS = 8;     			//must be 8
     static final int COLUMNS = 8;  			//must be 8
     
-	private Piece[][] positionOnBoard;		//cells contain either null or a link to a piece
+	private Piece[][] squares;		//cells contain either null or a link to a piece
 	private ArrayList<Piece> whites;  		//list of white pieces
 	private ArrayList<Piece> blacks;  		//list of black pieces
 	private ArrayList<Piece> pieces;		//list of pieces used as a buffer
@@ -30,7 +30,7 @@ class Board {
 	private Piece activePiece;				//link to a piece about to move
 	
 	Board() {
-		positionOnBoard = new Piece[COLUMNS][ROWS];
+		squares = new Piece[COLUMNS][ROWS];
 		whites = new ArrayList<>();
 		blacks  = new ArrayList<>();
 		
@@ -65,7 +65,6 @@ class Board {
 		 * selecting a piece that has eligible positions and write a link to it into activePiece
 		 */
 		
-		int randInt;
 		ArrayList<Integer> excludedNumbers = new ArrayList<>();
 
 		if (Game.turnNumber % 2 == 0) {
@@ -90,54 +89,53 @@ class Board {
 		}
 		
 		for (int i = 0; i < pieces.size(); i++) {						//amount of tries to make a move equals to amount of pieces in the set
-			do {
-				randInt = (int) (Math.random() * (pieces.size()));
-			} while(excludedNumbers.contains(randInt));
-			
-			if (!pieces.get(randInt).noEligiblePositions()) {			//if the chosen piece has eligible positions
-				activePiece = pieces.get(randInt);						//it becomes the active piece
-				return;	
-			} else {                                        			//if the piece didn't have eligible positions 
-				excludedNumbers.add(randInt);							//exclude the number of the piece from the next random selection
+			if (getPieceWithEligiblePositions(excludedNumbers)) {
+				return;
 			}
 		}
 		throw new Exception("No piece can make a move.\n"); 			//if there wasn't any successful moves at all throw exception and end the game
 	}
+
+
+	boolean getPieceWithEligiblePositions(ArrayList<Integer> excludedNumbers) {
+		int randomInt;
+		
+		do {
+			randomInt = (int) (Math.random() * pieces.size());
+		} while(excludedNumbers.contains(randomInt));
+		
+		if (!pieces.get(randomInt).hasNoEligiblePositions()) {		//if the chosen piece has eligible positions
+			activePiece = pieces.get(randomInt);					//it becomes the active piece
+			return true;	
+		} else {                                        			//if the piece didn't have eligible positions 
+			excludedNumbers.add(randomInt);	
+			return false;											//exclude the number of the piece from the next random selection
+		}
+	}
 	
 	void movePiece() {
 		/*
-		 * activePiece makes a move into one of its eligible positions
+		 * activePiece makes a move onto one of its eligible positions
 		 */
 		
 		Piece.Position newPosition = activePiece.getRandomEligiblePosition();
 		int x = newPosition.getX();
 		int y = newPosition.getY();
-		
-		System.out.print(activePiece + " " + activePiece.printPosition());
-		
+
 		if (activePiece instanceof King && activePiece.isOnInitialPosition()) {
 			roque(x, y);
 		}
 		
-		//kill a piece of the different color on the new position
-		if (!isNullHere(x, y)) {
-			if (activePiece.isWhite()) {
-				blacks.remove(positionOnBoard[x][y]);
-			} else {
-				whites.remove(positionOnBoard[x][y]);
-			}
-		}
+		killPieceOnNewPosition(x, y);
 		
-		positionOnBoard[activePiece.getX()][activePiece.getY()] = null;		//erase current position on board
+		System.out.print(activePiece + " " + activePiece.printPosition());
+		
+		squares[activePiece.getX()][activePiece.getY()] = null;		//erase current position on board
 		setPiecesPositionOnBoard(activePiece, newPosition);
+		
 		System.out.println("-" + activePiece.printPosition());
 	}
-	
-	void setPiecesPositionOnBoard(Piece piece, Piece.Position position) {
-		piece.setPosition(position);							//set a new position of a piece
-		positionOnBoard[piece.getX()][piece.getY()] = piece;	//put the piece on the board at the same coordinates
-	}
-	
+
 	void roque(int x, int y) {
 		/*
 		 * moving a rook if roque is the chosen move
@@ -145,29 +143,45 @@ class Board {
 		
 		if (activePiece.isWhite()) {
 			if (x == 2 && y == 0) {
-				setPiecesPositionOnBoard(positionOnBoard[0][0], positionOnBoard[0][0].new Position(3, 0));
-				positionOnBoard[0][0] = null;
+				setPiecesPositionOnBoard(squares[0][0], squares[0][0].new Position(3, 0));
+				squares[0][0] = null;
 			} else if (x == 6 && y == 0) {
-				setPiecesPositionOnBoard(positionOnBoard[7][0], positionOnBoard[7][0].new Position(5, 0));
-				positionOnBoard[7][0] = null;
+				setPiecesPositionOnBoard(squares[7][0], squares[7][0].new Position(5, 0));
+				squares[7][0] = null;
 			}
 		} else {
 			if (x == 2 && y == 7) {
-				setPiecesPositionOnBoard(positionOnBoard[0][7], positionOnBoard[0][7].new Position(3, 7));
-				positionOnBoard[0][7] = null;
+				setPiecesPositionOnBoard(squares[0][7], squares[0][7].new Position(3, 7));
+				squares[0][7] = null;
 			} else if (x == 6 && y == 7) {
-				setPiecesPositionOnBoard(positionOnBoard[7][7], positionOnBoard[7][7].new Position(5, 7));
-				positionOnBoard[7][7] = null;
+				setPiecesPositionOnBoard(squares[7][7], squares[7][7].new Position(5, 7));
+				squares[7][7] = null;
 			}
 		}
 	}
 	
-	boolean isNullHere(int x, int y) {
-		return (positionOnBoard[x][y] == null);
+	void killPieceOnNewPosition(int x, int y) {
+		if (!isNullHere(x, y)) {
+			if (activePiece.isWhite()) {
+				blacks.remove(squares[x][y]);
+			} else {
+				whites.remove(squares[x][y]);
+			}
+		}
 	}
 	
+	void setPiecesPositionOnBoard(Piece piece, Piece.Position position) {
+		piece.setPosition(position);							//set a new position of a piece
+		squares[piece.getX()][piece.getY()] = piece;	//put the piece on the board at the same coordinates
+	}
+	
+	boolean isNullHere(int x, int y) {
+		return (squares[x][y] == null);
+	}
+	
+	
 	Piece getPieceByPosition(int x, int y) {
-		return positionOnBoard[x][y];
+		return squares[x][y];
 	}
 	
 	boolean isPositionUnderAttack(Piece.Color myColor, Piece.Position position) {
@@ -198,10 +212,10 @@ class Board {
 			System.out.print((i + 1) + " ");
 			for (int j = 0; j < COLUMNS; j++) {
 				System.out.print("[");
-				if (positionOnBoard[j][i] == null) {
+				if (squares[j][i] == null) {
 					System.out.print(" ");
 				} else {
-					System.out.print(positionOnBoard[j][i]);
+					System.out.print(squares[j][i]);
 				}
 				System.out.print("]");
 			}
