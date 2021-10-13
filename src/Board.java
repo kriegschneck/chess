@@ -115,12 +115,11 @@ class Board {
 		
 		System.out.print(activePiece + " " + activePiece.printPosition());
 		
-		//if the chosen piece is the king and its move is roque
 		if (activePiece instanceof King && activePiece.isOnInitialPosition()) {
 			roque(x, y);
 		}
 		
-		//kill a piece of different color on a new position
+		//kill a piece of the different color on the new position
 		if (!isNullHere(x, y)) {
 			if (activePiece.isWhite()) {
 				blacks.remove(positionOnBoard[x][y]);
@@ -141,7 +140,7 @@ class Board {
 	
 	void roque(int x, int y) {
 		/*
-		 * moving a rook if roque was the chosen move
+		 * moving a rook if roque is the chosen move
 		 */
 		
 		if (activePiece.isWhite()) {
@@ -165,10 +164,6 @@ class Board {
 	
 	boolean isNullHere(int x, int y) {
 		return (positionOnBoard[x][y] == null);
-	}
-	
-	boolean isEnemyHere(Piece.Color myColor, int x, int y) {	
-		return (myColor.isWhite() ^ positionOnBoard[x][y].isWhite());
 	}
 	
 	Piece getPieceByPosition(int x, int y) {
@@ -196,6 +191,7 @@ class Board {
 		}
 		return false;
 	}
+	
 	
 	void printBoard() {
 		for (int i = ROWS - 1; i >=0; i--) {

@@ -94,6 +94,13 @@ abstract class Piece implements Runnable {
 		
 	}
 	
+	void setPosition(Position position) {
+		this.position = position;
+		if (onInitialPosition) {
+			onInitialPosition = false;
+		}
+	}
+	
 	int getX() {
 		return position.x;
 	}
@@ -102,11 +109,16 @@ abstract class Piece implements Runnable {
 		return position.y;
 	}
 	
-	void setPosition(Position position) {
-		this.position = position;
-		if (onInitialPosition) {
-			onInitialPosition = false;
-		}
+	boolean isWhite() {
+		return this.color.isWhite();
+	}
+	
+	boolean isOnInitialPosition() {
+		return onInitialPosition;
+	}
+	
+	public String toString() {
+		return name;
 	}
 	
 	String printPosition() {
@@ -134,18 +146,6 @@ abstract class Piece implements Runnable {
 		return attackedPositions.contains(position);
 	}
 	
-	boolean isWhite() {
-		return this.color.isWhite();
-	}
-	
-	boolean isOnInitialPosition() {
-		return onInitialPosition;
-	}
-	
-	public String toString() {
-		return name;
-	}
-	
 	void calculatePositions() {
 		thread = new Thread(this);
 		thread.start();
@@ -160,11 +160,13 @@ abstract class Piece implements Runnable {
 			if (currentBoard.isNullHere(x, y + 1)) {  //base move
 				eligiblePositions.add(new Position(x, y + 1));
 			}
-			if (x > 0 && !currentBoard.isNullHere(x - 1, y + 1) && currentBoard.isEnemyHere(color, x - 1, y + 1)) {  //kill to the left
+			if (x > 0 && !currentBoard.isNullHere(x - 1, y + 1) 
+					&& !color.equals(currentBoard.getPieceByPosition(x - 1, y + 1).color)) {  //kill to the left
 				eligiblePositions.add(new Position(x - 1, y + 1));
 				attackedPositions.add(new Position(x - 1, y + 1));
 			}
-			if (x < Board.COLUMNS - 1 && !currentBoard.isNullHere(x + 1, y + 1) && currentBoard.isEnemyHere(color, x + 1, y + 1)) {  //kill to the right
+			if (x < Board.COLUMNS - 1 && !currentBoard.isNullHere(x + 1, y + 1) 
+					&& !color.equals(currentBoard.getPieceByPosition(x + 1, y + 1).color)) {  //kill to the right
 				eligiblePositions.add(new Position(x + 1, y + 1));
 				attackedPositions.add(new Position(x + 1, y + 1));
 			} 
@@ -176,11 +178,13 @@ abstract class Piece implements Runnable {
 			if (currentBoard.isNullHere(x, y - 1)) {  //base move
 				eligiblePositions.add(new Position(x, y - 1));
 			}
-			if (x > 0 && !currentBoard.isNullHere(x - 1, y - 1) && currentBoard.isEnemyHere(color, x - 1, y - 1)) {  //kill to the left
+			if (x > 0 && !currentBoard.isNullHere(x - 1, y - 1) 
+					&& !color.equals(currentBoard.getPieceByPosition(x - 1, y - 1).color)) {  //kill to the left
 				eligiblePositions.add(new Position(x - 1, y - 1));
 				attackedPositions.add(new Position(x - 1, y - 1));
 			}
-			if (x < Board.COLUMNS - 1 && !currentBoard.isNullHere(x + 1, y - 1) && currentBoard.isEnemyHere(color, x + 1, y - 1)) {  //kill to the right
+			if (x < Board.COLUMNS - 1 && !currentBoard.isNullHere(x + 1, y - 1) 
+					&& !color.equals(currentBoard.getPieceByPosition(x + 1, y - 1).color)) {  //kill to the right
 				eligiblePositions.add(new Position(x + 1, y - 1));
 				attackedPositions.add(new Position(x + 1, y - 1));
 			}
@@ -276,7 +280,7 @@ abstract class Piece implements Runnable {
 			eligiblePositions.add(new Position(x, y));
 			attackedPositions.add(new Position(x, y));
 			return true;
-		} else if (currentBoard.isEnemyHere(color, x, y)) {
+		} else if (!color.equals(currentBoard.getPieceByPosition(x, y).color)) {
 			eligiblePositions.add(new Position(x, y));
 			return false;
 		} else {	//if this position is occupied by a piece of the same color 
@@ -346,7 +350,6 @@ abstract class Piece implements Runnable {
 		
 	}
 
-	
 }
 
 	
