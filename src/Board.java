@@ -114,7 +114,7 @@ class Board {
 		int y = bufferPosition.getY();
 		
 		//if the chosen move is roque
-		if (piece instanceof King && piece.isOnInitialPositin()) {
+		if (piece instanceof King && piece.isOnInitialPosition()) {
 			if (piece.isWhite()) {
 				if (x == 2 && y == 0) {
 					setPiecesPositionOnBoard(positionOnBoard[0][0], positionOnBoard[0][0].new Position(3, 0));

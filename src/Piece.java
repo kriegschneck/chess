@@ -138,7 +138,7 @@ abstract class Piece implements Runnable {
 		return this.color.isWhite();
 	}
 	
-	boolean isOnInitialPositin() {
+	boolean isOnInitialPosition() {
 		return onInitialPosition;
 	}
 	
@@ -279,9 +279,9 @@ abstract class Piece implements Runnable {
 		} else if (currentBoard.isEnemyHere(this, x, y)) {
 			eligiblePositions.add(new Position(x, y));
 			return false;
-		} else {
+		} else {	//if this position is occupied by a piece of the same color 
 			attackedPositions.add(new Position(x, y));
-			return false;	//if this position is occupied by a piece of the same color 
+			return false;	
 		}
 	}
 
@@ -338,7 +338,7 @@ abstract class Piece implements Runnable {
 						&& currentBoard.isNullHere(5, 7)					
 						&& currentBoard.isNullHere(6, 7) 
 						&& !currentBoard.isPositionUnderAttackByAnotherColor(color, position)
-						&& !currentBoard.isPositionUnderAttackByAnotherColor(color, new Position(3, 7))) {
+						&& !currentBoard.isPositionUnderAttackByAnotherColor(color, new Position(6, 7))) {
 					eligiblePositions.add(new Position(6, 7));
 				}
 			}
