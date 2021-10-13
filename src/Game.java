@@ -14,9 +14,9 @@ class Game {
 	 * The cycle lasts until there is no any pieces from one of the sides that have eligible move or
 	 * the main thread gets interrupted
 	 */
+	static int turnNumber = 0;
 	
 	public static void main(String[] args) {
-	    int turnNumber = 0;
 	    Board board = new Board(); 	//creating a board
 	    
 	    //playing the game
@@ -24,10 +24,10 @@ class Game {
 	    	//board.printBoard(turnNumber++);
 		    System.out.print("\nTurn " + ++turnNumber + "\n");  
 		    try {
-		    	board.selectPieceAndMove(turnNumber);
+		    	board.selectPieceAndMove();
 		    } catch (Exception e) {
 		    	System.out.println("\n" + e);
-		    	board.printBoard(turnNumber);
+		    	board.printBoard();
 		        break;
       		}
 		

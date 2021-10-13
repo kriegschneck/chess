@@ -22,7 +22,8 @@ abstract class Piece implements Runnable {
 	private String name;		//black pieces go with upper case letters
 	private Position position;  //a position of a figure
 	private ArrayList<Position> eligiblePositions;
-	boolean onInitialPosition;
+	private ArrayList<Position> attackedPositions;
+	private boolean onInitialPosition;
 	
 	enum Color {
 		WHITE,
@@ -64,6 +65,13 @@ abstract class Piece implements Runnable {
 			return y;
 		}
 		
+		public boolean equals(Object position) {
+			if (position instanceof Position) {
+				return (x == ((Position) position).x && y == ((Position) position).y);
+			}
+			return false;
+		}
+		
 		public String toString() {
 			return "[" + x + ", " + y + "]";
 		}
@@ -75,6 +83,7 @@ abstract class Piece implements Runnable {
 		this.color = color;
 		board.setPiecesPositionOnBoard(this, new Position(x, y));	//set position on the board
 		eligiblePositions = new ArrayList<>();
+		attackedPositions = new ArrayList<>();
 		onInitialPosition = true;
 		
 		if (color.isWhite()) {
@@ -117,21 +126,29 @@ abstract class Piece implements Runnable {
 		eligiblePositions.clear();
 	}
 	
+	void clearAttackedPositions() {
+		attackedPositions.clear();
+	}
+	
+	boolean findPositionAmongAttacked(Position position) {
+		return attackedPositions.contains(position);
+	}
+	
 	boolean isWhite() {
 		return this.color.isWhite();
+	}
+	
+	boolean isOnInitialPositin() {
+		return onInitialPosition;
 	}
 	
 	public String toString() {
 		return name;
 	}
 	
-	void calculateEligiblePosition() {
+	void calculatePositions() {
 		thread = new Thread(this);
 		thread.start();
-	}
-	
-	boolean findPositionAmongEligible(Position position) {
-		return eligiblePositions.contains(position);
 	}
 	
 	void pawnCalculating (int x, int y) {
@@ -145,9 +162,11 @@ abstract class Piece implements Runnable {
 			}
 			if (x > 0 && !currentBoard.isNullHere(x - 1, y + 1) && currentBoard.isEnemyHere(this, x - 1, y + 1)) {  //kill to the left
 				eligiblePositions.add(new Position(x - 1, y + 1));
+				attackedPositions.add(new Position(x - 1, y + 1));
 			}
 			if (x < Board.COLUMNS - 1 && !currentBoard.isNullHere(x + 1, y + 1) && currentBoard.isEnemyHere(this, x + 1, y + 1)) {  //kill to the right
 				eligiblePositions.add(new Position(x + 1, y + 1));
+				attackedPositions.add(new Position(x + 1, y + 1));
 			} 
 		} else {  //if the piece is black
 			if (y == 0) return;
@@ -159,9 +178,11 @@ abstract class Piece implements Runnable {
 			}
 			if (x > 0 && !currentBoard.isNullHere(x - 1, y - 1) && currentBoard.isEnemyHere(this, x - 1, y - 1)) {  //kill to the left
 				eligiblePositions.add(new Position(x - 1, y - 1));
+				attackedPositions.add(new Position(x - 1, y - 1));
 			}
 			if (x < Board.COLUMNS - 1 && !currentBoard.isNullHere(x + 1, y - 1) && currentBoard.isEnemyHere(this, x + 1, y - 1)) {  //kill to the right
 				eligiblePositions.add(new Position(x + 1, y - 1));
+				attackedPositions.add(new Position(x + 1, y - 1));
 			}
 		}
 		
@@ -253,11 +274,13 @@ abstract class Piece implements Runnable {
 	boolean CheckPosition(int x, int y) {	//continue checking if true
 		if (currentBoard.isNullHere(x, y)) {
 			eligiblePositions.add(new Position(x, y));
+			attackedPositions.add(new Position(x, y));
 			return true;
 		} else if (currentBoard.isEnemyHere(this, x, y)) {
 			eligiblePositions.add(new Position(x, y));
 			return false;
 		} else {
+			attackedPositions.add(new Position(x, y));
 			return false;	//if this position is occupied by a piece of the same color 
 		}
 	}

@@ -63,20 +63,26 @@ class Board {
 	}
 
 	//choosing a piece to make a move
-	void selectPieceAndMove(int turnNumber) throws Exception {
+	void selectPieceAndMove() throws Exception {
 		int randInt;
 		ArrayList<Integer> excludedNumbers = new ArrayList<>();
-		
-		if (turnNumber % 2 == 0) {
+
+		if (Game.turnNumber % 2 == 0) {
 			pieces = blacks;
 			enemyPieces = whites;
 		} else {
 			pieces = whites;
 			enemyPieces = blacks;
 		}
-	
+		
+		for (int i = 0; i < enemyPieces.size(); i++) {
+			enemyPieces.get(i).calculatePositions();
+		}
+		for (int i = 0; i < enemyPieces.size(); i++) {
+			enemyPieces.get(i).thread.join();
+		}
 		for (int i = 0; i < pieces.size(); i++) {
-			pieces.get(i).calculateEligiblePosition();
+			pieces.get(i).calculatePositions();
 		}
 		for (int i = 0; i < pieces.size(); i++) {
 			pieces.get(i).thread.join();
@@ -93,11 +99,6 @@ class Board {
 			if (!pieces.get(randInt).noEligiblePositions()) {		//if the chosen piece has eligible moves
 				moveToRandomEligiblePosition(pieces.get(randInt));	//the piece makes a move
 				System.out.println(" - " + pieces.get(randInt).printPosition());	
-				
-				/*if (setOfPieces.get(randInt) instanceof King) {
-					printBoard(turnNumber);
-				}*/
-				
 				return;	
 			} else {                                        			//if the piece didn't have eligible moves 
 				excludedNumbers.add(randInt);							//exclude the number of the piece from the next random selection
@@ -112,7 +113,8 @@ class Board {
 		int x = bufferPosition.getX();
 		int y = bufferPosition.getY();
 		
-		if (piece instanceof King && piece.onInitialPosition) {	//if the chosen move is roque
+		//if the chosen move is roque
+		if (piece instanceof King && piece.isOnInitialPositin()) {
 			if (piece.isWhite()) {
 				if (x == 2 && y == 0) {
 					setPiecesPositionOnBoard(positionOnBoard[0][0], positionOnBoard[0][0].new Position(3, 0));
@@ -170,14 +172,14 @@ class Board {
 		}
 		
 		while (iterator.hasNext()) {
-			if (iterator.next().findPositionAmongEligible(position)) {
+			if (iterator.next().findPositionAmongAttacked(position)) {
 				return true;
-			}
+			}	
 		}
 		return false;
 	}
 	
-	void printBoard(int turn) {
+	void printBoard() {
 		for (int i = ROWS - 1; i >=0; i--) {
 			System.out.print((i + 1) + " ");
 			for (int j = 0; j < COLUMNS; j++) {
@@ -191,7 +193,7 @@ class Board {
 			}
 			System.out.println();
 		}
-		System.out.println("   a  b  c  d  e  f  g  h\n\nTurn: " + turn);
+		System.out.println("   a  b  c  d  e  f  g  h\n\nTurn: " + Game.turnNumber);
 	}
 	
 }

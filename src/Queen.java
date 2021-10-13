@@ -19,6 +19,7 @@ class Queen extends Piece {
 	
 	public void run() {
 		clearEligiblePositions();
+		clearAttackedPositions();
 		lineCalculating(getX(), getY(), Direction.UP);
 		lineCalculating(getX(), getY(), Direction.DOWN);
 		lineCalculating(getX(), getY(), Direction.LEFT);

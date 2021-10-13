@@ -19,6 +19,7 @@ class Bishop extends Piece {
 	
 	public void run() {
 		clearEligiblePositions();
+		clearAttackedPositions();
 		lineCalculating(getX(), getY(), Direction.UP_LEFT);
 		lineCalculating(getX(), getY(), Direction.UP_RIGHT);
 		lineCalculating(getX(), getY(), Direction.DOWN_LEFT);
