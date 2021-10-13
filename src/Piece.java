@@ -160,11 +160,11 @@ abstract class Piece implements Runnable {
 			if (currentBoard.isNullHere(x, y + 1)) {  //base move
 				eligiblePositions.add(new Position(x, y + 1));
 			}
-			if (x > 0 && !currentBoard.isNullHere(x - 1, y + 1) && currentBoard.isEnemyHere(this, x - 1, y + 1)) {  //kill to the left
+			if (x > 0 && !currentBoard.isNullHere(x - 1, y + 1) && currentBoard.isEnemyHere(color, x - 1, y + 1)) {  //kill to the left
 				eligiblePositions.add(new Position(x - 1, y + 1));
 				attackedPositions.add(new Position(x - 1, y + 1));
 			}
-			if (x < Board.COLUMNS - 1 && !currentBoard.isNullHere(x + 1, y + 1) && currentBoard.isEnemyHere(this, x + 1, y + 1)) {  //kill to the right
+			if (x < Board.COLUMNS - 1 && !currentBoard.isNullHere(x + 1, y + 1) && currentBoard.isEnemyHere(color, x + 1, y + 1)) {  //kill to the right
 				eligiblePositions.add(new Position(x + 1, y + 1));
 				attackedPositions.add(new Position(x + 1, y + 1));
 			} 
@@ -176,11 +176,11 @@ abstract class Piece implements Runnable {
 			if (currentBoard.isNullHere(x, y - 1)) {  //base move
 				eligiblePositions.add(new Position(x, y - 1));
 			}
-			if (x > 0 && !currentBoard.isNullHere(x - 1, y - 1) && currentBoard.isEnemyHere(this, x - 1, y - 1)) {  //kill to the left
+			if (x > 0 && !currentBoard.isNullHere(x - 1, y - 1) && currentBoard.isEnemyHere(color, x - 1, y - 1)) {  //kill to the left
 				eligiblePositions.add(new Position(x - 1, y - 1));
 				attackedPositions.add(new Position(x - 1, y - 1));
 			}
-			if (x < Board.COLUMNS - 1 && !currentBoard.isNullHere(x + 1, y - 1) && currentBoard.isEnemyHere(this, x + 1, y - 1)) {  //kill to the right
+			if (x < Board.COLUMNS - 1 && !currentBoard.isNullHere(x + 1, y - 1) && currentBoard.isEnemyHere(color, x + 1, y - 1)) {  //kill to the right
 				eligiblePositions.add(new Position(x + 1, y - 1));
 				attackedPositions.add(new Position(x + 1, y - 1));
 			}
@@ -276,7 +276,7 @@ abstract class Piece implements Runnable {
 			eligiblePositions.add(new Position(x, y));
 			attackedPositions.add(new Position(x, y));
 			return true;
-		} else if (currentBoard.isEnemyHere(this, x, y)) {
+		} else if (currentBoard.isEnemyHere(color, x, y)) {
 			eligiblePositions.add(new Position(x, y));
 			return false;
 		} else {	//if this position is occupied by a piece of the same color 
@@ -293,7 +293,7 @@ abstract class Piece implements Runnable {
 				if (j < 0 || j >= Board.ROWS) continue;	
 				if (i == x && j == y) continue;			//if this is the initial position
 				
-				if(!currentBoard.isPositionUnderAttackByAnotherColor(color, new Position(i, j))) {
+				if(!currentBoard.isPositionUnderAttack(color, new Position(i, j))) {
 					CheckPosition(i, j);
 				}
 			}
@@ -307,8 +307,8 @@ abstract class Piece implements Runnable {
 						&& currentBoard.isNullHere(1, 0)					
 						&& currentBoard.isNullHere(2, 0) 
 						&& currentBoard.isNullHere(3, 0)
-						&& !currentBoard.isPositionUnderAttackByAnotherColor(color, position)
-						&& !currentBoard.isPositionUnderAttackByAnotherColor(color, new Position(2, 0))) {	
+						&& !currentBoard.isPositionUnderAttack(color, position)
+						&& !currentBoard.isPositionUnderAttack(color, new Position(2, 0))) {	
 					eligiblePositions.add(new Position(2, 0));
 				}
 				
@@ -316,8 +316,8 @@ abstract class Piece implements Runnable {
 						&& currentBoard.getPieceByPosition(7, 0).onInitialPosition
 						&& currentBoard.isNullHere(5, 0)					
 						&& currentBoard.isNullHere(6, 0) 
-						&& !currentBoard.isPositionUnderAttackByAnotherColor(color, position)
-						&& !currentBoard.isPositionUnderAttackByAnotherColor(color, new Position(6, 0))) {
+						&& !currentBoard.isPositionUnderAttack(color, position)
+						&& !currentBoard.isPositionUnderAttack(color, new Position(6, 0))) {
 					eligiblePositions.add(new Position(6, 0));
 				}
 				
@@ -327,8 +327,8 @@ abstract class Piece implements Runnable {
 						&& currentBoard.isNullHere(1, 7)					
 						&& currentBoard.isNullHere(2, 7) 
 						&& currentBoard.isNullHere(3, 7)
-						&& !currentBoard.isPositionUnderAttackByAnotherColor(color, position)
-						&& !currentBoard.isPositionUnderAttackByAnotherColor(color, new Position(2, 7))) {
+						&& !currentBoard.isPositionUnderAttack(color, position)
+						&& !currentBoard.isPositionUnderAttack(color, new Position(2, 7))) {
 					eligiblePositions.add(new Position(2, 7));
 				}
 				
@@ -336,8 +336,8 @@ abstract class Piece implements Runnable {
 						&& currentBoard.getPieceByPosition(7, 7).onInitialPosition
 						&& currentBoard.isNullHere(5, 7)					
 						&& currentBoard.isNullHere(6, 7) 
-						&& !currentBoard.isPositionUnderAttackByAnotherColor(color, position)
-						&& !currentBoard.isPositionUnderAttackByAnotherColor(color, new Position(6, 7))) {
+						&& !currentBoard.isPositionUnderAttack(color, position)
+						&& !currentBoard.isPositionUnderAttack(color, new Position(6, 7))) {
 					eligiblePositions.add(new Position(6, 7));
 				}
 			}

@@ -24,7 +24,8 @@ class Game {
 	    	//board.printBoard(turnNumber++);
 		    System.out.print("\nTurn " + ++turnNumber + "\n");  
 		    try {
-		    	board.selectPieceAndMove();
+		    	board.selectPiece();
+		    	board.movePiece();
 		    } catch (Exception e) {
 		    	System.out.println("\n" + e);
 		    	board.printBoard();

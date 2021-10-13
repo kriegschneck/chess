@@ -27,8 +27,7 @@ class Board {
 	private ArrayList<Piece> blacks;  		//list of black pieces
 	private ArrayList<Piece> pieces;		//list of pieces used as a buffer
 	private ArrayList<Piece> enemyPieces;
-	private King whiteKing;
-	private King blackKing;
+	private Piece activePiece;				//link to a piece about to move
 	
 	Board() {
 		positionOnBoard = new Piece[COLUMNS][ROWS];
@@ -45,8 +44,7 @@ class Board {
 		whites.add(new Bishop(this, Piece.Color.WHITE, 2, 0));
 		whites.add(new Bishop(this, Piece.Color.WHITE, 5, 0));
 		whites.add(new Queen(this, Piece.Color.WHITE, 3, 0));
-		whiteKing = new King(this, Piece.Color.WHITE, 4, 0);
-		whites.add(whiteKing);
+		whites.add(new King(this, Piece.Color.WHITE, 4, 0));
 		
 		for (int i = 0; i < 8; i++) {
 			blacks.add(new Pawn(this, Piece.Color.BLACK, i, ROWS - 2));
@@ -58,12 +56,15 @@ class Board {
     	blacks.add(new Bishop(this, Piece.Color.BLACK, 2, ROWS - 1));
     	blacks.add(new Bishop(this, Piece.Color.BLACK, 5, ROWS - 1));
     	blacks.add(new Queen(this, Piece.Color.BLACK, 3, ROWS - 1));
-    	blackKing = new King(this, Piece.Color.BLACK, 4, ROWS - 1);
-    	blacks.add(blackKing);
+    	blacks.add(new King(this, Piece.Color.BLACK, 4, ROWS - 1));
 	}
 
-	//choosing a piece to make a move
-	void selectPieceAndMove() throws Exception {
+	
+	void selectPiece() throws Exception {
+		/*
+		 * selecting a piece that has eligible positions and write a link to it into activePiece
+		 */
+		
 		int randInt;
 		ArrayList<Integer> excludedNumbers = new ArrayList<>();
 
@@ -88,61 +89,49 @@ class Board {
 			pieces.get(i).thread.join();
 		}
 		
-		//choosing a piece to make a move
-		for (int i = 0; i < pieces.size(); i++) {					//amount of tries to make a move equals to amount of pieces in the set
+		for (int i = 0; i < pieces.size(); i++) {						//amount of tries to make a move equals to amount of pieces in the set
 			do {
-				randInt = (int) (Math.random() * (pieces.size())); //get a random number excluding ones that have no eligible moves
+				randInt = (int) (Math.random() * (pieces.size()));
 			} while(excludedNumbers.contains(randInt));
 			
-			System.out.print(pieces.get(randInt) + " " + pieces.get(randInt).printPosition());
-			
-			if (!pieces.get(randInt).noEligiblePositions()) {		//if the chosen piece has eligible moves
-				moveToRandomEligiblePosition(pieces.get(randInt));	//the piece makes a move
-				System.out.println("-" + pieces.get(randInt).printPosition());	
+			if (!pieces.get(randInt).noEligiblePositions()) {			//if the chosen piece has eligible positions
+				activePiece = pieces.get(randInt);						//it becomes the active piece
 				return;	
-			} else {                                        			//if the piece didn't have eligible moves 
+			} else {                                        			//if the piece didn't have eligible positions 
 				excludedNumbers.add(randInt);							//exclude the number of the piece from the next random selection
-				System.out.println("-couldn't make a move");
 			}
 		}
 		throw new Exception("No piece can make a move.\n"); 			//if there wasn't any successful moves at all throw exception and end the game
 	}
 	
-	void moveToRandomEligiblePosition(Piece piece) { //setting a new position of a piece
-		Piece.Position bufferPosition = piece.getRandomEligiblePosition();
-		int x = bufferPosition.getX();
-		int y = bufferPosition.getY();
+	void movePiece() {
+		/*
+		 * activePiece makes a move into one of its eligible positions
+		 */
 		
-		//if the chosen move is roque
-		if (piece instanceof King && piece.isOnInitialPosition()) {
-			if (piece.isWhite()) {
-				if (x == 2 && y == 0) {
-					setPiecesPositionOnBoard(positionOnBoard[0][0], positionOnBoard[0][0].new Position(3, 0));
-					positionOnBoard[0][0] = null;
-				} else if (x == 6 && y == 0) {
-					setPiecesPositionOnBoard(positionOnBoard[7][0], positionOnBoard[7][0].new Position(5, 0));
-					positionOnBoard[7][0] = null;
-				}
-			} else {
-				if (x == 2 && y == 7) {
-					setPiecesPositionOnBoard(positionOnBoard[0][7], positionOnBoard[0][7].new Position(3, 7));
-					positionOnBoard[0][7] = null;
-				} else if (x == 6 && y == 0) {
-					setPiecesPositionOnBoard(positionOnBoard[7][7], positionOnBoard[7][7].new Position(5, 7));
-					positionOnBoard[7][7] = null;
-				}
-			}
+		Piece.Position newPosition = activePiece.getRandomEligiblePosition();
+		int x = newPosition.getX();
+		int y = newPosition.getY();
+		
+		System.out.print(activePiece + " " + activePiece.printPosition());
+		
+		//if the chosen piece is the king and its move is roque
+		if (activePiece instanceof King && activePiece.isOnInitialPosition()) {
+			roque(x, y);
 		}
-
+		
+		//kill a piece of different color on a new position
 		if (!isNullHere(x, y)) {
-			if (piece.isWhite()) {
-				blacks.remove(positionOnBoard[x][y]);			//kill a piece of different color on a new position
+			if (activePiece.isWhite()) {
+				blacks.remove(positionOnBoard[x][y]);
 			} else {
 				whites.remove(positionOnBoard[x][y]);
 			}
 		}
-		positionOnBoard[piece.getX()][piece.getY()] = null;		//erase current position on board
-		setPiecesPositionOnBoard(piece, bufferPosition);
+		
+		positionOnBoard[activePiece.getX()][activePiece.getY()] = null;		//erase current position on board
+		setPiecesPositionOnBoard(activePiece, newPosition);
+		System.out.println("-" + activePiece.printPosition());
 	}
 	
 	void setPiecesPositionOnBoard(Piece piece, Piece.Position position) {
@@ -150,19 +139,48 @@ class Board {
 		positionOnBoard[piece.getX()][piece.getY()] = piece;	//put the piece on the board at the same coordinates
 	}
 	
+	void roque(int x, int y) {
+		/*
+		 * moving a rook if roque was the chosen move
+		 */
+		
+		if (activePiece.isWhite()) {
+			if (x == 2 && y == 0) {
+				setPiecesPositionOnBoard(positionOnBoard[0][0], positionOnBoard[0][0].new Position(3, 0));
+				positionOnBoard[0][0] = null;
+			} else if (x == 6 && y == 0) {
+				setPiecesPositionOnBoard(positionOnBoard[7][0], positionOnBoard[7][0].new Position(5, 0));
+				positionOnBoard[7][0] = null;
+			}
+		} else {
+			if (x == 2 && y == 7) {
+				setPiecesPositionOnBoard(positionOnBoard[0][7], positionOnBoard[0][7].new Position(3, 7));
+				positionOnBoard[0][7] = null;
+			} else if (x == 6 && y == 7) {
+				setPiecesPositionOnBoard(positionOnBoard[7][7], positionOnBoard[7][7].new Position(5, 7));
+				positionOnBoard[7][7] = null;
+			}
+		}
+	}
+	
 	boolean isNullHere(int x, int y) {
 		return (positionOnBoard[x][y] == null);
 	}
 	
-	boolean isEnemyHere(Piece piece, int x, int y) {	
-		return (piece.isWhite() ^ positionOnBoard[x][y].isWhite());
+	boolean isEnemyHere(Piece.Color myColor, int x, int y) {	
+		return (myColor.isWhite() ^ positionOnBoard[x][y].isWhite());
 	}
 	
 	Piece getPieceByPosition(int x, int y) {
 		return positionOnBoard[x][y];
 	}
 	
-	boolean isPositionUnderAttackByAnotherColor(Piece.Color myColor, Piece.Position position) {
+	boolean isPositionUnderAttack(Piece.Color myColor, Piece.Position position) {
+		/*
+		 * method receives piece's color and one of its possible positions
+		 * check if this position is under attack by pieces of different color
+		 */
+		
 		Iterator<Piece> iterator;
 		
 		if (myColor.isWhite()) {
