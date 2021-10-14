@@ -21,7 +21,7 @@ abstract class Piece implements Runnable {
 	private Color color;
 	private String name;		//black pieces go with upper case letters
 	private Position position;  //a position of a figure
-	private ArrayList<Position> eligiblePositions;
+	 ArrayList<Position> eligiblePositions;
 	private ArrayList<Position> attackedPositions;
 	private boolean onInitialPosition;
 	
@@ -297,12 +297,8 @@ abstract class Piece implements Runnable {
 				if (j < 0 || j >= Board.ROWS) continue;	
 				if (i == x && j == y) continue;			//if this is the initial position
 				
-				CheckPosition(i, j);
-				
-				if(!eligiblePositions.isEmpty()) {
-					if(!currentBoard.isPositionUnderAttack(color, new Position(i, j))) {
-						eligiblePositions.remove(eligiblePositions.size() - 1);
-					}
+				if(!currentBoard.isPositionUnderAttack(color, new Position(i, j))) {
+					CheckPosition(i, j);
 				}
 				
 			}

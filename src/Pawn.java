@@ -1,5 +1,5 @@
 /*
- * Piece
+ * Pawn
  * 
  * v0.9
  * 
@@ -18,8 +18,6 @@ class Pawn extends Piece {
 	}
 	
 	public void run() {
-		clearEligiblePositions();
-		clearAttackedPositions();
 		pawnCalculating(getX(), getY());
 	}
 	

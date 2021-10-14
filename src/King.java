@@ -1,5 +1,5 @@
 /*
- * Piece
+ * King
  * 
  * v0.9
  * 
@@ -18,8 +18,6 @@ class King extends Piece {
 	}
 
 	public void run() {
-		clearEligiblePositions();
-		clearAttackedPositions();
 		kingCalculating(getX(), getY());
 	}
 		

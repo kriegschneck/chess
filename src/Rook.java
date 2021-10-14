@@ -1,5 +1,5 @@
 /*
- * Piece
+ * Rook
  * 
  * v0.9
  * 
@@ -18,8 +18,6 @@ class Rook extends Piece {
 	}
 	
 	public void run() {
-		clearEligiblePositions();
-		clearAttackedPositions();
 		lineCalculating(getX(), getY(), Direction.UP);
 		lineCalculating(getX(), getY(), Direction.DOWN);
 		lineCalculating(getX(), getY(), Direction.LEFT);

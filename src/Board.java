@@ -123,6 +123,8 @@ class Board {
 		int y = newPosition.getY();
 
 		if (activePiece instanceof King && activePiece.isOnInitialPosition()) {
+			
+			//check if the chosen move is roque. if yes, move a rook
 			roque(x, y);
 		}
 		
@@ -134,6 +136,8 @@ class Board {
 		setPiecesPositionOnBoard(activePiece, newPosition);
 		
 		System.out.println("-" + activePiece.printPosition());
+		
+		eraseCalculations();
 	}
 
 	void roque(int x, int y) {
@@ -173,6 +177,17 @@ class Board {
 	void setPiecesPositionOnBoard(Piece piece, Piece.Position position) {
 		piece.setPosition(position);							//set a new position of a piece
 		squares[piece.getX()][piece.getY()] = piece;	//put the piece on the board at the same coordinates
+	}
+	
+	void eraseCalculations() {
+		for (int i = 0; i < enemyPieces.size(); i++) {
+			enemyPieces.get(i).clearEligiblePositions();
+			enemyPieces.get(i).clearAttackedPositions();
+		}
+		for (int i = 0; i < pieces.size(); i++) {
+			pieces.get(i).clearEligiblePositions();
+			pieces.get(i).clearAttackedPositions();
+		}
 	}
 	
 	boolean isNullHere(int x, int y) {

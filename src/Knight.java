@@ -1,5 +1,5 @@
 /*
- * Piece
+ * Knight
  * 
  * v0.9
  * 
@@ -18,8 +18,6 @@ class Knight extends Piece {
 	}
 
 	public void run() {
-		clearEligiblePositions();
-		clearAttackedPositions();
 		knightCalculating(getX(), getY());
 	}
 	
