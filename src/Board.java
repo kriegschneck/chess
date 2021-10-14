@@ -22,7 +22,7 @@ class Board {
 	static final int ROWS = 8;     			//must be 8
     static final int COLUMNS = 8;  			//must be 8
     
-	private Piece[][] squares;		//cells contain either null or a link to a piece
+	private Piece[][] squares;				//cells contain either null or a link to a piece
 	private ArrayList<Piece> whites;  		//list of white pieces
 	private ArrayList<Piece> blacks;  		//list of black pieces
 	private ArrayList<Piece> pieces;		//list of pieces used as a buffer
@@ -60,13 +60,7 @@ class Board {
 	}
 
 	
-	void selectPiece() throws Exception {
-		/*
-		 * selecting a piece that has eligible positions and write a link to it into activePiece
-		 */
-		
-		ArrayList<Integer> excludedNumbers = new ArrayList<>();
-
+	void chooseActiveSetOfPieces() throws InterruptedException {
 		if (Game.turnNumber % 2 == 0) {
 			pieces = blacks;
 			enemyPieces = whites;
@@ -75,42 +69,47 @@ class Board {
 			enemyPieces = blacks;
 		}
 		
-		for (int i = 0; i < enemyPieces.size(); i++) {
-			enemyPieces.get(i).calculatePositions();
-		}
-		for (int i = 0; i < enemyPieces.size(); i++) {
-			enemyPieces.get(i).thread.join();
-		}
-		for (int i = 0; i < pieces.size(); i++) {
-			pieces.get(i).calculatePositions();
-		}
-		for (int i = 0; i < pieces.size(); i++) {
-			pieces.get(i).thread.join();
-		}
-		
-		for (int i = 0; i < pieces.size(); i++) {						//amount of tries to make a move equals to amount of pieces in the set
-			if (getPieceWithEligiblePositions(excludedNumbers)) {
-				return;
-			}
-		}
-		throw new Exception("No piece can make a move.\n"); 			//if there wasn't any successful moves at all throw exception and end the game
+		calculateSetOfPieces(enemyPieces);
+		calculateSetOfPieces(pieces);
 	}
 
-
-	boolean getPieceWithEligiblePositions(ArrayList<Integer> excludedNumbers) {
-		int randomInt;
-		
-		do {
-			randomInt = (int) (Math.random() * pieces.size());
-		} while(excludedNumbers.contains(randomInt));
-		
-		if (!pieces.get(randomInt).hasNoEligiblePositions()) {		//if the chosen piece has eligible positions
-			activePiece = pieces.get(randomInt);					//it becomes the active piece
-			return true;	
-		} else {                                        			//if the piece didn't have eligible positions 
-			excludedNumbers.add(randomInt);	
-			return false;											//exclude the number of the piece from the next random selection
+	void calculateSetOfPieces(ArrayList<Piece> setOfPieces) throws InterruptedException {
+		for (int i = 0; i < setOfPieces.size(); i++) {
+			setOfPieces.get(i).calculatePositions();
 		}
+		for (int i = 0; i < setOfPieces.size(); i++) {
+			setOfPieces.get(i).thread.join();
+		}
+	}
+
+	void selectPiece() throws Exception {
+		/*
+		 * Choosing the active piece from pieces that have eligible positions. 
+		 * If there's none, throw exception and end the game
+		 */
+		
+		ArrayList<Integer> excludedNumbers = new ArrayList<>();
+		
+		//amount of tries to choose a piece equals to amount of pieces in the set
+		for (int i = 0; i < pieces.size(); i++) {						
+			int randomInt = getRandomNumberWithExclusions(pieces.size(), excludedNumbers);
+			
+			if (pieces.get(randomInt).hasEligiblePositions()) {
+				activePiece = pieces.get(randomInt);
+				return;	
+			} else {  							//if the piece didn't have eligible positions
+				excludedNumbers.add(randomInt);	//exclude its number from the next random selection
+			}
+		}
+		throw new Exception("No pieces can make a move.\n"); 
+	}
+
+	int getRandomNumberWithExclusions(int limit, ArrayList<Integer> excludedNumbers) {
+		int n;
+		do {
+			n = (int) (Math.random() * limit);
+		} while(excludedNumbers.contains(n));
+		return n;
 	}
 	
 	void movePiece() {
@@ -137,7 +136,8 @@ class Board {
 		
 		System.out.println("-" + activePiece.printPosition());
 		
-		eraseCalculations();
+		eraseCalculations(whites);
+		eraseCalculations(blacks);
 	}
 
 	void roque(int x, int y) {
@@ -179,21 +179,16 @@ class Board {
 		squares[piece.getX()][piece.getY()] = piece;	//put the piece on the board at the same coordinates
 	}
 	
-	void eraseCalculations() {
-		for (int i = 0; i < enemyPieces.size(); i++) {
-			enemyPieces.get(i).clearEligiblePositions();
-			enemyPieces.get(i).clearAttackedPositions();
-		}
-		for (int i = 0; i < pieces.size(); i++) {
-			pieces.get(i).clearEligiblePositions();
-			pieces.get(i).clearAttackedPositions();
+	void eraseCalculations(ArrayList<Piece> setOfPieces) {
+		for (int i = 0; i < setOfPieces.size(); i++) {
+			setOfPieces.get(i).clearEligiblePositions();
+			setOfPieces.get(i).clearAttackedPositions();
 		}
 	}
 	
 	boolean isNullHere(int x, int y) {
 		return (squares[x][y] == null);
 	}
-	
 	
 	Piece getPieceByPosition(int x, int y) {
 		return squares[x][y];
@@ -221,10 +216,10 @@ class Board {
 		return false;
 	}
 	
-	
 	void printBoard() {
 		for (int i = ROWS - 1; i >=0; i--) {
 			System.out.print((i + 1) + " ");
+			
 			for (int j = 0; j < COLUMNS; j++) {
 				System.out.print("[");
 				if (squares[j][i] == null) {
@@ -234,6 +229,7 @@ class Board {
 				}
 				System.out.print("]");
 			}
+			
 			System.out.println();
 		}
 		System.out.println("   a  b  c  d  e  f  g  h\n\nTurn: " + Game.turnNumber);

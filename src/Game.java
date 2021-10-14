@@ -23,11 +23,12 @@ class Game {
 	    while (true) {
 		    System.out.print("\nTurn " + ++turnNumber + "\n");  
 		    try {
+		    	board.chooseActiveSetOfPieces();
 		    	board.selectPiece();
 		    	board.movePiece();
 		    	Thread.sleep(1);
 		    } catch (InterruptedException e) {
-		    	System.out.println("The game was interrupted");
+		    	System.out.println("The game was interrupted\n" + e);
 		        break;
 		    } catch (Exception e) {
 		    	System.out.println("\n" + e);

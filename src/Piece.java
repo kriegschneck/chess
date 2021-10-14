@@ -15,13 +15,13 @@ abstract class Piece implements Runnable {
 	 * superclass for all the pieces. implements all the fields and methods but run()
 	 */
 	
-	Board currentBoard;         //a link to the current board to play on
+	Board board;         //a link to the current board to play on
 	Thread thread;
 	
 	private Color color;
 	private String name;		//black pieces go with upper case letters
 	private Position position;  //a position of a figure
-	 ArrayList<Position> eligiblePositions;
+	private ArrayList<Position> eligiblePositions;
 	private ArrayList<Position> attackedPositions;
 	private boolean onInitialPosition;
 	
@@ -79,7 +79,7 @@ abstract class Piece implements Runnable {
 	}
 
 	Piece(Board board, Color color, int x, int y, String name) {
-		currentBoard = board;
+		this.board = board;
 		this.color = color;
 		board.setPiecesPositionOnBoard(this, new Position(x, y));	//set position on the board
 		eligiblePositions = new ArrayList<>();
@@ -130,8 +130,8 @@ abstract class Piece implements Runnable {
 		return eligiblePositions.get(randInt);
 	}
 	
-	boolean hasNoEligiblePositions() {
-		return eligiblePositions.isEmpty();
+	boolean hasEligiblePositions() {
+		return !eligiblePositions.isEmpty();
 	}
 	
 	void clearEligiblePositions() {
@@ -154,37 +154,37 @@ abstract class Piece implements Runnable {
 	void pawnCalculating (int x, int y) {
 		if (color.isWhite()) { //calculating eligible moves if the piece is white
 			if (y == Board.ROWS - 1) return;
-			if (onInitialPosition && currentBoard.isNullHere(x, y + 1) && currentBoard.isNullHere(x, y + 2)) {  //advance
+			if (onInitialPosition && board.isNullHere(x, y + 1) && board.isNullHere(x, y + 2)) {  //advance
 				eligiblePositions.add(new Position(x, y + 2));
 			}
-			if (currentBoard.isNullHere(x, y + 1)) {  //base move
+			if (board.isNullHere(x, y + 1)) {  //base move
 				eligiblePositions.add(new Position(x, y + 1));
 			}
-			if (x > 0 && !currentBoard.isNullHere(x - 1, y + 1) 
-					&& !color.equals(currentBoard.getPieceByPosition(x - 1, y + 1).color)) {  //kill to the left
+			if (x > 0 && !board.isNullHere(x - 1, y + 1) 
+					&& !color.equals(board.getPieceByPosition(x - 1, y + 1).color)) {  //kill to the left
 				eligiblePositions.add(new Position(x - 1, y + 1));
 				attackedPositions.add(new Position(x - 1, y + 1));
 			}
-			if (x < Board.COLUMNS - 1 && !currentBoard.isNullHere(x + 1, y + 1) 
-					&& !color.equals(currentBoard.getPieceByPosition(x + 1, y + 1).color)) {  //kill to the right
+			if (x < Board.COLUMNS - 1 && !board.isNullHere(x + 1, y + 1) 
+					&& !color.equals(board.getPieceByPosition(x + 1, y + 1).color)) {  //kill to the right
 				eligiblePositions.add(new Position(x + 1, y + 1));
 				attackedPositions.add(new Position(x + 1, y + 1));
 			} 
 		} else {  //if the piece is black
 			if (y == 0) return;
-			if (onInitialPosition && currentBoard.isNullHere(x, y - 1) && currentBoard.isNullHere(x, y - 2)) {  //advance
+			if (onInitialPosition && board.isNullHere(x, y - 1) && board.isNullHere(x, y - 2)) {  //advance
 				eligiblePositions.add(new Position(x, y - 2));
 			}
-			if (currentBoard.isNullHere(x, y - 1)) {  //base move
+			if (board.isNullHere(x, y - 1)) {  //base move
 				eligiblePositions.add(new Position(x, y - 1));
 			}
-			if (x > 0 && !currentBoard.isNullHere(x - 1, y - 1) 
-					&& !color.equals(currentBoard.getPieceByPosition(x - 1, y - 1).color)) {  //kill to the left
+			if (x > 0 && !board.isNullHere(x - 1, y - 1) 
+					&& !color.equals(board.getPieceByPosition(x - 1, y - 1).color)) {  //kill to the left
 				eligiblePositions.add(new Position(x - 1, y - 1));
 				attackedPositions.add(new Position(x - 1, y - 1));
 			}
-			if (x < Board.COLUMNS - 1 && !currentBoard.isNullHere(x + 1, y - 1) 
-					&& !color.equals(currentBoard.getPieceByPosition(x + 1, y - 1).color)) {  //kill to the right
+			if (x < Board.COLUMNS - 1 && !board.isNullHere(x + 1, y - 1) 
+					&& !color.equals(board.getPieceByPosition(x + 1, y - 1).color)) {  //kill to the right
 				eligiblePositions.add(new Position(x + 1, y - 1));
 				attackedPositions.add(new Position(x + 1, y - 1));
 			}
@@ -276,11 +276,11 @@ abstract class Piece implements Runnable {
 	}
 	
 	boolean CheckPosition(int x, int y) {	//continue checking if true
-		if (currentBoard.isNullHere(x, y)) {
+		if (board.isNullHere(x, y)) {
 			eligiblePositions.add(new Position(x, y));
 			attackedPositions.add(new Position(x, y));
 			return true;
-		} else if (!color.equals(currentBoard.getPieceByPosition(x, y).color)) {
+		} else if (!color.equals(board.getPieceByPosition(x, y).color)) {
 			eligiblePositions.add(new Position(x, y));
 			return false;
 		} else {	//if this position is occupied by a piece of the same color 
@@ -297,7 +297,7 @@ abstract class Piece implements Runnable {
 				if (j < 0 || j >= Board.ROWS) continue;	
 				if (i == x && j == y) continue;			//if this is the initial position
 				
-				if(!currentBoard.isPositionUnderAttack(color, new Position(i, j))) {
+				if(!board.isPositionUnderAttack(color, new Position(i, j))) {
 					CheckPosition(i, j);
 				}
 				
@@ -307,42 +307,42 @@ abstract class Piece implements Runnable {
 		//Roque
 		if (onInitialPosition) {
 			if (color.isWhite()) {
-				if (!currentBoard.isNullHere(0, 0)
-						&& currentBoard.getPieceByPosition(0, 0).onInitialPosition	//rook is on the initial position
-						&& currentBoard.isNullHere(1, 0)					
-						&& currentBoard.isNullHere(2, 0) 
-						&& currentBoard.isNullHere(3, 0)
-						&& !currentBoard.isPositionUnderAttack(color, position)
-						&& !currentBoard.isPositionUnderAttack(color, new Position(2, 0))) {	
+				if (!board.isNullHere(0, 0)
+						&& board.getPieceByPosition(0, 0).onInitialPosition	//rook is on the initial position
+						&& board.isNullHere(1, 0)					
+						&& board.isNullHere(2, 0) 
+						&& board.isNullHere(3, 0)
+						&& !board.isPositionUnderAttack(color, position)
+						&& !board.isPositionUnderAttack(color, new Position(2, 0))) {	
 					eligiblePositions.add(new Position(2, 0));
 				}
 				
-				if (!currentBoard.isNullHere(7, 0)
-						&& currentBoard.getPieceByPosition(7, 0).onInitialPosition
-						&& currentBoard.isNullHere(5, 0)					
-						&& currentBoard.isNullHere(6, 0) 
-						&& !currentBoard.isPositionUnderAttack(color, position)
-						&& !currentBoard.isPositionUnderAttack(color, new Position(6, 0))) {
+				if (!board.isNullHere(7, 0)
+						&& board.getPieceByPosition(7, 0).onInitialPosition
+						&& board.isNullHere(5, 0)					
+						&& board.isNullHere(6, 0) 
+						&& !board.isPositionUnderAttack(color, position)
+						&& !board.isPositionUnderAttack(color, new Position(6, 0))) {
 					eligiblePositions.add(new Position(6, 0));
 				}
 				
 			} else {
-				if (!currentBoard.isNullHere(0, 7)
-						&& currentBoard.getPieceByPosition(0, 7).onInitialPosition	//rook is on the initial position
-						&& currentBoard.isNullHere(1, 7)					
-						&& currentBoard.isNullHere(2, 7) 
-						&& currentBoard.isNullHere(3, 7)
-						&& !currentBoard.isPositionUnderAttack(color, position)
-						&& !currentBoard.isPositionUnderAttack(color, new Position(2, 7))) {
+				if (!board.isNullHere(0, 7)
+						&& board.getPieceByPosition(0, 7).onInitialPosition	//rook is on the initial position
+						&& board.isNullHere(1, 7)					
+						&& board.isNullHere(2, 7) 
+						&& board.isNullHere(3, 7)
+						&& !board.isPositionUnderAttack(color, position)
+						&& !board.isPositionUnderAttack(color, new Position(2, 7))) {
 					eligiblePositions.add(new Position(2, 7));
 				}
 				
-				if (!currentBoard.isNullHere(7, 7)
-						&& currentBoard.getPieceByPosition(7, 7).onInitialPosition
-						&& currentBoard.isNullHere(5, 7)					
-						&& currentBoard.isNullHere(6, 7) 
-						&& !currentBoard.isPositionUnderAttack(color, position)
-						&& !currentBoard.isPositionUnderAttack(color, new Position(6, 7))) {
+				if (!board.isNullHere(7, 7)
+						&& board.getPieceByPosition(7, 7).onInitialPosition
+						&& board.isNullHere(5, 7)					
+						&& board.isNullHere(6, 7) 
+						&& !board.isPositionUnderAttack(color, position)
+						&& !board.isPositionUnderAttack(color, new Position(6, 7))) {
 					eligiblePositions.add(new Position(6, 7));
 				}
 			}
